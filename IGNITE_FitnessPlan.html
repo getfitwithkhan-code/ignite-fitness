@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGNITE — Fuel. Forge. Dominate.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800;900&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+:root {
+  --fire: #FF3D00;
+  --gold: #FFB300;
+  --electric: #00E5FF;
+  --dark: #080808;
+  --dark2: #0f0f0f;
+  --dark3: #161616;
+  --card: #111111;
+  --text: #F5F5F5;
+  --muted: #777;
+  --border: rgba(255,255,255,0.06);
+}
+body { background:var(--dark); color:var(--text); font-family:'Montserrat',sans-serif; overflow-x:hidden; cursor:none; }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-thumb { background:var(--fire); }
+
+/* CUSTOM CURSOR */
+.cursor { position:fixed; width:10px; height:10px; background:var(--fire); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:transform 0.1s; mix-blend-mode:difference; }
+.cursor-ring { position:fixed; width:36px; height:36px; border:1px solid rgba(255,61,0,0.5); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:all 0.15s ease; }
+
+/* PAGES */
+.page { display:none; min-height:100vh; }
+.page.active { display:block; }
+
+/* ===== NAV ===== */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  padding:20px 60px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(8,8,8,0.9);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+}
+.logo {
+  font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:6px;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  cursor:pointer;
+}
+.nav-center { display:flex; gap:40px; }
+.nav-link {
+  font-family:'Oswald',sans-serif; font-weight:400; font-size:0.8rem;
+  letter-spacing:3px; text-transform:uppercase; color:var(--muted);
+  background:none; border:none; cursor:pointer; transition:color 0.3s;
+}
+.nav-link:hover,.nav-link.active { color:var(--text); }
+.nav-cta {
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:0.8rem; letter-spacing:3px; text-transform:uppercase;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  color:#000; padding:12px 28px; border:none; cursor:pointer; border-radius:2px;
+  transition:all 0.3s; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+.nav-cta:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(255,61,0,0.4); }
+
+/* ===== HERO PAGE ===== */
+#page-home { position:relative; overflow:hidden; }
+.hero-noise {
+  position:absolute; inset:0; opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+.hero-bg-lines {
+  position:absolute; inset:0;
+  background: repeating-linear-gradient(90deg, rgba(255,61,0,0.03) 0px, transparent 1px, transparent 80px);
+  pointer-events:none;
+}
+.hero-glow {
+  position:absolute; top:20%; left:50%; transform:translateX(-50%);
+  width:800px; height:600px; border-radius:50%;
+  background:radial-gradient(ellipse,rgba(255,61,0,0.08) 0%,rgba(255,179,0,0.04) 40%,transparent 70%);
+  pointer-events:none; animation:glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse { 0%,100%{opacity:0.6;transform:translateX(-50%) scale(1)} 50%{opacity:1;transform:translateX(-50%) scale(1.1)} }
+
+.hero-wrap {
+  min-height:100vh; display:flex; align-items:center;
+  padding:120px 60px 60px;
+  position:relative; z-index:1;
+}
+.hero-left { flex:1; max-width:700px; }
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:'Oswald',sans-serif; font-weight:500; font-size:0.72rem; letter-spacing:5px; text-transform:uppercase;
+  color:var(--fire); margin-bottom:32px;
+  animation:slideRight 0.8s ease both;
+}
+.eyebrow-line { width:40px; height:1px; background:var(--fire); }
+
+.hero-title {
+  font-family:'Bebas Neue',sans-serif;
+  line-height:0.88; letter-spacing:4px;
+  animation:heroReveal 1s 0.2s ease both;
+}
+.hero-title .line1 { font-size:clamp(4rem,10vw,9rem); color:var(--text); display:block; }
+.hero-title .line2 {
+  font-size:clamp(5rem,13vw,12rem); display:block;
+  background:linear-gradient(135deg,var(--fire) 0%,var(--gold) 60%,#fff 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 40px rgba(255,61,0,0.4));
+}
+.hero-title .line3 { font-size:clamp(4rem,10vw,9rem); color:var(--text); display:block; letter-spacing:16px; opacity:0.15; }
+
+.hero-desc {
+  font-size:1rem; font-weight:300; color:var(--muted); line-height:1.8;
+  max-width:440px; margin:28px 0 44px;
+  animation:fadeUp 0.9s 0.5s ease both;
+}
+.hero-desc strong { color:var(--text); font-weight:600; }
+
+.hero-actions { display:flex; gap:16px; flex-wrap:wrap; animation:fadeUp 0.9s 0.7s ease both; }
+.btn-fire {
+  font-family:'Oswald',sans-serif; font-weight:700; font-size:1rem; letter-spacing:3px; text-transform:uppercase;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  color:#000; padding:18px 48px; border:none; cursor:pointer; border-radius:2px;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.btn-fire::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0.15); opacity:0; transition:opacity 0.3s; }
+.btn-fire:hover::after { opacity:1; }
+.btn-fire:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(255,61,0,0.5); }
+.btn-ghost {
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:1rem; letter-spacing:3px; text-transform:uppercase;
+  background:transparent; color:var(--text); padding:18px 48px;
+  border:1px solid rgba(255,255,255,0.15); cursor:pointer; border-radius:2px;
+  transition:all 0.3s;
+}
+.btn-ghost:hover { border-color:var(--fire); color:var(--fire); }
+
+.hero-numbers {
+  display:flex; gap:0; margin-top:64px; padding-top:48px;
+  border-top:1px solid var(--border);
+  animation:fadeUp 0.9s 0.9s ease both;
+}
+.hero-num { flex:1; padding-right:40px; border-right:1px solid var(--border); }
+.hero-num:last-child { border-right:none; padding-right:0; padding-left:40px; }
+.hero-num:not(:first-child) { padding-left:40px; }
+.num-val {
+  font-family:'Bebas Neue',sans-serif; font-size:3.5rem; letter-spacing:2px;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1;
+}
+.num-label { font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+
+.hero-right {
+  flex:0 0 380px; display:flex; flex-direction:column; gap:16px;
+  animation:slideLeft 1s 0.4s ease both;
+}
+.hero-card {
+  background:var(--card); border:1px solid var(--border); border-radius:6px;
+  padding:24px; position:relative; overflow:hidden;
+  transition:transform 0.3s, border-color 0.3s;
+}
+.hero-card:hover { transform:translateX(-4px); border-color:rgba(255,61,0,0.3); }
+.hero-card::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:linear-gradient(180deg,var(--fire),var(--gold));
+}
+.hc-label { font-family:'Oswald',sans-serif; font-size:0.65rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.hc-val { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:2px; color:var(--text); }
+.hc-sub { font-size:0.78rem; color:var(--muted); margin-top:4px; }
+
+/* MARQUEE */
+.marquee-wrap { overflow:hidden; padding:20px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:var(--dark2); }
+.marquee-track { display:flex; gap:60px; animation:marqueeScroll 25s linear infinite; white-space:nowrap; }
+.marquee-item {
+  font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:5px; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:20px; flex-shrink:0;
+}
+.marquee-dot { width:6px; height:6px; border-radius:50%; background:var(--fire); flex-shrink:0; }
+@keyframes marqueeScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ===== PLANS PAGE ===== */
+#page-plans { padding-top:80px; }
+.plans-hero {
+  padding:80px 60px 60px;
+  text-align:center;
+  background:linear-gradient(180deg,rgba(255,61,0,0.04) 0%,transparent 100%);
+  position:relative;
+}
+.plans-hero::before {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:600px; height:2px;
+  background:linear-gradient(90deg,transparent,var(--fire),var(--gold),transparent);
+}
+.page-eyebrow {
+  font-family:'Oswald',sans-serif; font-weight:500; font-size:0.72rem; letter-spacing:5px; text-transform:uppercase;
+  color:var(--fire); margin-bottom:20px; display:block;
+}
+.page-title {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(4rem,8vw,7rem); letter-spacing:4px; line-height:0.9;
+}
+.page-title .hl {
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.page-sub { color:var(--muted); max-width:520px; margin:20px auto 0; line-height:1.7; font-size:0.95rem; }
+
+/* DIET TOGGLE */
+.diet-bar {
+  display:flex; align-items:center; justify-content:center; gap:0;
+  margin:48px auto 0; max-width:400px;
+  background:var(--dark3); border:1px solid var(--border); border-radius:4px; overflow:hidden;
+}
+.diet-btn {
+  flex:1; padding:16px; font-family:'Oswald',sans-serif; font-weight:600; font-size:0.85rem;
+  letter-spacing:3px; text-transform:uppercase; background:none; border:none; cursor:pointer;
+  color:var(--muted); transition:all 0.3s;
+}
+.diet-btn.on { background:linear-gradient(135deg,var(--fire),var(--gold)); color:#000; }
+
+/* CALCULATOR STRIP */
+.calc-strip {
+  margin:40px 60px;
+  background:var(--dark3); border:1px solid var(--border); border-radius:8px;
+  padding:40px 48px;
+  display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:24px; align-items:end;
+}
+.calc-field label {
+  display:block; font-family:'Oswald',sans-serif; font-weight:500; font-size:0.65rem;
+  letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:10px;
+}
+.calc-field input, .calc-field select {
+  width:100%; background:var(--dark); border:1px solid var(--border); color:var(--text);
+  padding:14px 16px; border-radius:4px; font-family:'Montserrat',sans-serif; font-size:0.95rem;
+  outline:none; transition:border-color 0.3s; -webkit-appearance:none;
+}
+.calc-field input:focus, .calc-field select:focus { border-color:var(--fire); }
+.calc-field select option { background:var(--dark); }
+.calc-btn {
+  font-family:'Oswald',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:3px; text-transform:uppercase;
+  background:linear-gradient(135deg,var(--fire),var(--gold));
+  color:#000; padding:14px 32px; border:none; cursor:pointer; border-radius:4px; white-space:nowrap;
+  transition:all 0.3s;
+}
+.calc-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,61,0,0.4); }
+.calc-results {
+  margin:0 60px 40px;
+  display:none; grid-template-columns:repeat(5,1fr); gap:16px;
+}
+.calc-results.show { display:grid; }
+.calc-result-card {
+  background:var(--card); border:1px solid var(--border); border-radius:6px; padding:24px;
+  text-align:center; position:relative; overflow:hidden;
+  animation:popIn 0.4s ease both;
+}
+.calc-result-card::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--fire),var(--gold));
+}
+@keyframes popIn { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+.cr-val { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:2px; color:var(--fire); line-height:1; }
+.cr-unit { font-size:0.8rem; color:var(--gold); font-weight:600; }
+.cr-label { font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-top:8px; }
+
+/* GOAL GRID */
+.goals-section { padding:0 60px 80px; }
+.goals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+
+.goal-card {
+  background:var(--card); border:1px solid var(--border); border-radius:8px;
+  padding:40px 36px; cursor:pointer; position:relative; overflow:hidden;
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+  group:true;
+}
+.goal-card-bg {
+  position:absolute; inset:0; opacity:0;
+  transition:opacity 0.4s;
+}
+.goal-card:hover .goal-card-bg { opacity:1; }
+.goal-card:hover { transform:translateY(-8px); }
+.goal-card-top-line {
+  position:absolute; top:0; left:0; right:0; height:2px;
+  opacity:0; transition:opacity 0.4s;
+}
+.goal-card:hover .goal-card-top-line { opacity:1; }
+.goal-icon-wrap {
+  width:64px; height:64px; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  font-size:2rem; margin-bottom:24px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  transition:all 0.3s;
+}
+.goal-card:hover .goal-icon-wrap { transform:scale(1.1); }
+.goal-name {
+  font-family:'Bebas Neue',sans-serif; font-size:2.2rem; letter-spacing:3px;
+  margin-bottom:10px; line-height:1;
+}
+.goal-desc { font-size:0.85rem; color:var(--muted); line-height:1.7; margin-bottom:28px; }
+.goal-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+.goal-tag {
+  font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; font-weight:600;
+  padding:4px 10px; border-radius:2px; background:rgba(255,255,255,0.04); color:var(--muted);
+  border:1px solid var(--border);
+}
+.goal-open-btn {
+  display:flex; align-items:center; gap:10px;
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:0.78rem; letter-spacing:3px; text-transform:uppercase;
+  transition:gap 0.3s;
+}
+.goal-card:hover .goal-open-btn { gap:16px; }
+.goal-arrow {
+  width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:0.9rem; transition:transform 0.3s;
+}
+.goal-card:hover .goal-arrow { transform:translateX(4px); }
+
+/* ===== PLAN DETAIL PAGE ===== */
+#page-detail { padding-top:80px; }
+.detail-header {
+  padding:60px 60px 40px;
+  display:flex; align-items:flex-start; gap:40px;
+  border-bottom:1px solid var(--border);
+}
+.detail-back {
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:0.75rem; letter-spacing:3px; text-transform:uppercase;
+  background:none; border:1px solid var(--border); color:var(--muted); padding:12px 20px; border-radius:4px;
+  cursor:pointer; transition:all 0.3s; display:flex; align-items:center; gap:8px; white-space:nowrap;
+}
+.detail-back:hover { border-color:var(--fire); color:var(--fire); }
+.detail-info { flex:1; }
+.detail-badge {
+  display:inline-block; font-family:'Oswald',sans-serif; font-weight:600; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase;
+  padding:6px 16px; border-radius:2px; margin-bottom:16px;
+}
+.detail-title {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(3rem,6vw,5.5rem); letter-spacing:4px; line-height:0.9;
+  margin-bottom:16px;
+}
+.detail-desc { color:var(--muted); line-height:1.7; max-width:600px; }
+
+/* DETAIL TABS */
+.detail-tabs {
+  display:flex; gap:0; border-bottom:1px solid var(--border);
+  padding:0 60px; overflow-x:auto; background:var(--dark2);
+}
+.d-tab {
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:0.78rem; letter-spacing:3px; text-transform:uppercase;
+  padding:20px 32px; background:none; border:none; cursor:pointer; color:var(--muted);
+  border-bottom:2px solid transparent; margin-bottom:-1px; transition:all 0.3s; white-space:nowrap;
+  display:flex; align-items:center; gap:8px;
+}
+.d-tab.on { color:var(--text); border-bottom-color:var(--fire); }
+
+/* DIET TAB */
+.tab-content { display:none; padding:48px 60px; }
+.tab-content.on { display:block; }
+
+.diet-week-header {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:32px;
+}
+.diet-note {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,179,0,0.08); border:1px solid rgba(255,179,0,0.2); border-radius:4px;
+  padding:10px 16px; font-size:0.78rem; color:var(--gold);
+}
+
+.meals-timeline { display:flex; flex-direction:column; gap:12px; }
+.meal-item {
+  display:grid; grid-template-columns:110px 1fr auto;
+  align-items:center; gap:24px;
+  background:var(--dark2); border:1px solid var(--border); border-radius:6px;
+  padding:20px 24px;
+  border-left:3px solid;
+  transition:all 0.25s; cursor:default;
+  position:relative; overflow:hidden;
+}
+.meal-item:hover { background:var(--dark3); transform:translateX(4px); }
+.meal-item::before { content:''; position:absolute; right:-30px; top:50%; transform:translateY(-50%); width:100px; height:100px; border-radius:50%; opacity:0.03; }
+.m-time { font-family:'Oswald',sans-serif; font-weight:600; font-size:1rem; }
+.m-body {}
+.m-name { font-weight:700; font-size:0.95rem; margin-bottom:5px; }
+.m-detail { font-size:0.82rem; color:var(--muted); line-height:1.5; }
+.m-macro { display:flex; gap:12px; margin-top:8px; }
+.m-macro span { font-size:0.7rem; letter-spacing:1px; padding:2px 8px; border-radius:2px; background:rgba(255,255,255,0.04); color:var(--muted); }
+.m-cal { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:1px; text-align:right; white-space:nowrap; }
+.m-cal-label { font-size:0.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); }
+.total-bar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:20px 24px; border-radius:6px; margin-top:8px;
+  background:linear-gradient(135deg,rgba(255,61,0,0.08),rgba(255,179,0,0.06));
+  border:1px solid rgba(255,179,0,0.2);
+}
+.total-bar-label { font-family:'Oswald',sans-serif; font-weight:600; font-size:0.75rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+.total-bar-val { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--gold); }
+
+/* WORKOUT TAB */
+.workout-layout { display:grid; grid-template-columns:280px 1fr; gap:24px; }
+.day-sidebar { display:flex; flex-direction:column; gap:8px; }
+.day-btn {
+  padding:16px 20px; background:var(--dark2); border:1px solid var(--border); border-radius:6px;
+  cursor:pointer; text-align:left; transition:all 0.3s;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.day-btn:hover { border-color:rgba(255,61,0,0.3); background:var(--dark3); }
+.day-btn.on { background:linear-gradient(135deg,rgba(255,61,0,0.15),rgba(255,179,0,0.08)); border-color:var(--fire); }
+.day-btn-name { font-family:'Oswald',sans-serif; font-weight:600; font-size:0.85rem; letter-spacing:2px; text-transform:uppercase; }
+.day-btn-focus { font-size:0.75rem; color:var(--muted); margin-top:3px; }
+.day-btn-badge { font-size:0.65rem; letter-spacing:2px; padding:3px 8px; border-radius:2px; }
+
+.day-detail { background:var(--dark2); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.day-detail-header {
+  padding:28px 32px;
+  background:linear-gradient(135deg,rgba(255,61,0,0.1),rgba(255,179,0,0.06));
+  border-bottom:1px solid var(--border);
+}
+.day-detail-day { font-family:'Oswald',sans-serif; font-size:0.7rem; letter-spacing:4px; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+.day-detail-name { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:3px; color:var(--text); }
+.day-detail-sub { font-size:0.82rem; color:var(--muted); margin-top:4px; }
+.day-detail-body { padding:32px; }
+
+.exercise-list { display:flex; flex-direction:column; gap:10px; }
+.ex-card {
+  background:var(--dark); border:1px solid var(--border); border-radius:6px;
+  padding:20px 24px; display:grid; grid-template-columns:40px 1fr auto auto auto;
+  align-items:center; gap:16px;
+  transition:all 0.25s;
+}
+.ex-card:hover { border-color:rgba(255,61,0,0.3); transform:translateX(4px); }
+.ex-num {
+  font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:1px;
+  color:var(--muted); text-align:center;
+}
+.ex-name { font-weight:700; font-size:0.9rem; }
+.ex-muscle { font-size:0.75rem; color:var(--muted); margin-top:3px; }
+.ex-pill {
+  font-family:'Oswald',sans-serif; font-weight:600; font-size:0.72rem; letter-spacing:2px;
+  padding:6px 14px; border-radius:2px; text-align:center; white-space:nowrap;
+}
+.ex-pill.sets { background:rgba(255,61,0,0.1); color:var(--fire); }
+.ex-pill.reps { background:rgba(255,179,0,0.1); color:var(--gold); }
+.ex-pill.rest { background:rgba(0,229,255,0.08); color:var(--electric); }
+
+.day-tips { margin-top:24px; padding:20px 24px; background:var(--dark); border:1px solid var(--border); border-radius:6px; }
+.day-tips-title { font-family:'Oswald',sans-serif; font-weight:600; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+.day-tips ul { display:flex; flex-direction:column; gap:6px; padding-left:16px; }
+.day-tips li { font-size:0.82rem; color:var(--muted); line-height:1.5; }
+
+/* HYDRATION TAB */
+.hydration-layout { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.h-card { background:var(--dark2); border:1px solid var(--border); border-radius:8px; padding:32px; }
+.h-card-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:3px; margin-bottom:24px; display:flex; align-items:center; gap:12px; }
+.water-list { display:flex; flex-direction:column; gap:10px; }
+.water-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 16px; background:var(--dark); border-radius:4px; border:1px solid var(--border);
+}
+.wi-time { font-family:'Oswald',sans-serif; font-weight:600; font-size:0.88rem; color:var(--electric); }
+.wi-amount { font-size:0.85rem; color:var(--muted); }
+.wi-bar { flex:1; margin:0 16px; height:3px; background:rgba(0,229,255,0.1); border-radius:2px; position:relative; overflow:hidden; }
+.wi-bar-fill { height:100%; background:linear-gradient(90deg,var(--electric),rgba(0,229,255,0.3)); border-radius:2px; }
+
+.tips-grid2 { display:flex; flex-direction:column; gap:12px; }
+.tip-item {
+  display:flex; gap:16px; align-items:flex-start;
+  padding:16px 20px; background:var(--dark); border:1px solid var(--border); border-radius:6px;
+}
+.tip-icon { font-size:1.4rem; flex-shrink:0; margin-top:2px; }
+.tip-text { font-size:0.85rem; color:var(--muted); line-height:1.6; }
+.tip-text strong { color:var(--text); }
+
+.macros-banner {
+  margin-top:24px; padding:24px; background:linear-gradient(135deg,rgba(255,61,0,0.06),rgba(255,179,0,0.04));
+  border:1px solid rgba(255,179,0,0.15); border-radius:6px;
+  display:flex; gap:32px; flex-wrap:wrap;
+}
+.macro-item { text-align:center; }
+.macro-val { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; }
+.macro-label { font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+
+/* ANIMATIONS */
+@keyframes slideRight { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideLeft { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+@keyframes heroReveal { from{opacity:0;transform:translateY(40px) skewY(2deg)} to{opacity:1;transform:translateY(0) skewY(0)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  nav { padding:16px 24px; }
+  .nav-center { display:none; }
+  .hero-wrap { flex-direction:column; padding:100px 24px 40px; }
+  .hero-right { display:none; }
+  #page-plans .calc-strip, #page-plans .calc-results, #page-plans .goals-section, .plans-hero { padding-left:24px; padding-right:24px; }
+  .calc-strip { grid-template-columns:1fr 1fr; }
+  .goals-grid { grid-template-columns:1fr; }
+  .calc-results { grid-template-columns:repeat(2,1fr); }
+  .detail-header { padding:40px 24px 32px; }
+  .detail-tabs { padding:0 24px; }
+  .tab-content { padding:32px 24px; }
+  .workout-layout { grid-template-columns:1fr; }
+  .hydration-layout { grid-template-columns:1fr; }
+  .meal-item { grid-template-columns:90px 1fr; }
+  .m-cal { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="goPage('home')">IGNITE</div>
+  <div class="nav-center">
+    <button class="nav-link active" onclick="goPage('home');setNavActive(this)">Home</button>
+    <button class="nav-link" onclick="goPage('plans');setNavActive(this)">Plans</button>
+    <button class="nav-link" onclick="scrollToCalc()">Calculator</button>
+  </div>
+  <button class="nav-cta" onclick="goPage('plans')">Start Your Journey →</button>
+</nav>
+
+<!-- ===== PAGE: HOME ===== -->
+<div id="page-home" class="page active">
+
+  <div class="hero-noise"></div>
+  <div class="hero-bg-lines"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-wrap">
+    <div class="hero-left">
+      <div class="hero-eyebrow"><span class="eyebrow-line"></span>Science-Backed Fitness Nutrition</div>
+      <h1 class="hero-title">
+        <span class="line1">BREAK</span>
+        <span class="line2">LIMITS</span>
+        <span class="line3">DAILY</span>
+      </h1>
+      <p class="hero-desc">
+        Stop guessing. Start <strong>transforming.</strong> Complete diet plans, precision workouts, hydration schedules — built for every body, every goal.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-fire" onclick="goPage('plans')">Choose Your Plan</button>
+        <button class="btn-ghost" onclick="scrollToCalc()">Calculate Macros</button>
+      </div>
+      <div class="hero-numbers">
+        <div class="hero-num"><div class="num-val">6+</div><div class="num-label">Goal Plans</div></div>
+        <div class="hero-num"><div class="num-val">2</div><div class="num-label">Diet Types</div></div>
+        <div class="hero-num"><div class="num-val">7</div><div class="num-label">Day Programs</div></div>
+        <div class="hero-num"><div class="num-val">∞</div><div class="num-label">Results</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hc-label">Today's Protein Target</div>
+        <div class="hc-val" style="color:var(--fire)">180g <span style="font-size:1rem;color:var(--muted)">/ day</span></div>
+        <div class="hc-sub">Based on 80kg bodyweight, muscle gain</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-label">Recommended Calories</div>
+        <div class="hc-val" style="color:var(--gold)">3,100 <span style="font-size:1rem;color:var(--muted)">kcal</span></div>
+        <div class="hc-sub">Lean bulk with moderate surplus</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-label">Water Intake</div>
+        <div class="hc-val" style="color:var(--electric)">3.5L <span style="font-size:1rem;color:var(--muted)">/ day</span></div>
+        <div class="hc-sub">Including 500ml peri-workout</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-label">Today's Focus</div>
+        <div class="hc-val">CHEST + SHOULDERS</div>
+        <div class="hc-sub">Push day — 8 exercises, 45 min</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item"><span class="marquee-dot"></span>Weight Loss</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Muscle Gain</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Body Cutting</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Endurance Training</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Veg & Non-Veg Plans</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Macro Calculator</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Hydration Schedules</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Weekly Workouts</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Weight Loss</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Muscle Gain</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Body Cutting</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Endurance Training</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Veg & Non-Veg Plans</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Macro Calculator</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Hydration Schedules</span>
+      <span class="marquee-item"><span class="marquee-dot"></span>Weekly Workouts</span>
+    </div>
+  </div>
+
+  <!-- FEATURE STRIP -->
+  <div style="padding:80px 60px; display:grid; grid-template-columns:repeat(4,1fr); gap:20px; max-width:1400px; margin:0 auto;">
+    <div style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:6px;transition:border-color 0.3s" onmouseover="this.style.borderColor='rgba(255,61,0,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;margin-bottom:16px">🍽️</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:8px">Precision Meals</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.7">Every meal timed to the hour. Breakfast to bedtime — nothing is left to chance.</div>
+    </div>
+    <div style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:6px;transition:border-color 0.3s" onmouseover="this.style.borderColor='rgba(255,61,0,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;margin-bottom:16px">🏋️</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:8px">Day-by-Day Workouts</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.7">Click any day of the week and see exactly what to do — sets, reps, rest, muscles.</div>
+    </div>
+    <div style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:6px;transition:border-color 0.3s" onmouseover="this.style.borderColor='rgba(255,61,0,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;margin-bottom:16px">⚡</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:8px">Macro Calculator</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.7">Enter your bodyweight, goal and activity level. Get your personal protein, carb and fat targets instantly.</div>
+    </div>
+    <div style="padding:32px;background:var(--card);border:1px solid var(--border);border-radius:6px;transition:border-color 0.3s" onmouseover="this.style.borderColor='rgba(255,61,0,0.3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;margin-bottom:16px">💧</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;margin-bottom:8px">Hydration Sync</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.7">Water intake synced to your meals and workout. Never underperform due to dehydration.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: PLANS ===== -->
+<div id="page-plans" class="page">
+  <div class="plans-hero">
+    <span class="page-eyebrow">● Choose Your Battle</span>
+    <h2 class="page-title">YOUR GOAL.<br><span class="hl">YOUR WEAPON.</span></h2>
+    <p class="page-sub">Select vegetarian or non-veg, then pick your goal. Each plan gives you full diet + day-by-day workouts + hydration.</p>
+    <div class="diet-bar">
+      <button class="diet-btn on" id="vegBtn" onclick="setDiet('veg',this)">🌱 Vegetarian</button>
+      <button class="diet-btn" id="nvBtn" onclick="setDiet('nonveg',this)">🥩 Non-Veg</button>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div id="calcAnchor" style="padding-top:20px"></div>
+  <div class="calc-strip">
+    <div class="calc-field">
+      <label>Body Weight (kg)</label>
+      <input type="number" id="cWeight" placeholder="e.g. 75" min="30" max="200">
+    </div>
+    <div class="calc-field">
+      <label>Goal</label>
+      <select id="cGoal">
+        <option value="loss">Weight Loss</option>
+        <option value="gain">Weight Gain</option>
+        <option value="muscle">Muscle Gain</option>
+        <option value="maintain">Maintenance</option>
+        <option value="cut">Body Cutting</option>
+        <option value="endurance">Endurance</option>
+      </select>
+    </div>
+    <div class="calc-field">
+      <label>Activity Level</label>
+      <select id="cActivity">
+        <option value="1.2">Sedentary (desk job)</option>
+        <option value="1.375">Light (1–3 days/week)</option>
+        <option value="1.55" selected>Moderate (3–5 days)</option>
+        <option value="1.725">Active (6–7 days)</option>
+        <option value="1.9">Very Active (2x/day)</option>
+      </select>
+    </div>
+    <button class="calc-btn" onclick="calcMacros()">Calculate →</button>
+  </div>
+  <div class="calc-results" id="calcResults">
+    <div class="calc-result-card" style="animation-delay:0s">
+      <div class="cr-val" id="cr-cal">—</div><div class="cr-unit">kcal</div>
+      <div class="cr-label">Daily Calories</div>
+    </div>
+    <div class="calc-result-card" style="animation-delay:0.08s">
+      <div class="cr-val" id="cr-pro" style="color:var(--gold)">—</div><div class="cr-unit" style="color:var(--fire)">g</div>
+      <div class="cr-label">Protein / Day</div>
+    </div>
+    <div class="calc-result-card" style="animation-delay:0.16s">
+      <div class="cr-val" id="cr-carb" style="color:var(--electric)">—</div><div class="cr-unit" style="color:var(--electric)">g</div>
+      <div class="cr-label">Carbs / Day</div>
+    </div>
+    <div class="calc-result-card" style="animation-delay:0.24s">
+      <div class="cr-val" id="cr-fat" style="color:#a8ff78">—</div><div class="cr-unit" style="color:#a8ff78">g</div>
+      <div class="cr-label">Fats / Day</div>
+    </div>
+    <div class="calc-result-card" style="animation-delay:0.32s">
+      <div class="cr-val" id="cr-water" style="color:var(--electric)">—</div><div class="cr-unit" style="color:var(--electric)">L</div>
+      <div class="cr-label">Water / Day</div>
+    </div>
+  </div>
+
+  <!-- GOAL CARDS -->
+  <div class="goals-section">
+    <div class="goals-grid" id="goalGrid">
+
+      <div class="goal-card" onclick="openPlan('loss')" style="--gc:#FF3D00">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(255,61,0,0.08),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,var(--fire),transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(255,61,0,0.08);border-color:rgba(255,61,0,0.2)">🔥</div>
+        <div class="goal-name" style="color:var(--fire)">Weight Loss</div>
+        <div class="goal-desc">Caloric deficit + high-protein strategy to burn fat while preserving muscle. Sustainable, science-backed.</div>
+        <div class="goal-tags">
+          <span class="goal-tag">Fat Burn</span><span class="goal-tag">High Protein</span><span class="goal-tag">HIIT</span>
+        </div>
+        <div class="goal-open-btn" style="color:var(--fire)">
+          Open Full Plan
+          <div class="goal-arrow" style="background:rgba(255,61,0,0.15);color:var(--fire)">→</div>
+        </div>
+      </div>
+
+      <div class="goal-card" onclick="openPlan('gain')" style="--gc:#FFB300">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(255,179,0,0.08),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,var(--gold),transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(255,179,0,0.08);border-color:rgba(255,179,0,0.2)">📈</div>
+        <div class="goal-name" style="color:var(--gold)">Weight Gain</div>
+        <div class="goal-desc">Caloric surplus with whole food density. Add healthy weight progressively without accumulating excess fat.</div>
+        <div class="goal-tags"><span class="goal-tag">Caloric Surplus</span><span class="goal-tag">Compound Lifts</span><span class="goal-tag">Bulk</span></div>
+        <div class="goal-open-btn" style="color:var(--gold)">Open Full Plan <div class="goal-arrow" style="background:rgba(255,179,0,0.15);color:var(--gold)">→</div></div>
+      </div>
+
+      <div class="goal-card" onclick="openPlan('muscle')" style="--gc:#00E5FF">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(0,229,255,0.06),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,var(--electric),transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(0,229,255,0.06);border-color:rgba(0,229,255,0.2)">💪</div>
+        <div class="goal-name" style="color:var(--electric)">Muscle Gain</div>
+        <div class="goal-desc">Maximum hypertrophy protocol. Progressive overload, anabolic timing, and optimal recovery built in.</div>
+        <div class="goal-tags"><span class="goal-tag">Hypertrophy</span><span class="goal-tag">Push Pull Legs</span><span class="goal-tag">Anabolic</span></div>
+        <div class="goal-open-btn" style="color:var(--electric)">Open Full Plan <div class="goal-arrow" style="background:rgba(0,229,255,0.08);color:var(--electric)">→</div></div>
+      </div>
+
+      <div class="goal-card" onclick="openPlan('maintain')" style="--gc:#a8ff78">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(168,255,120,0.06),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,#a8ff78,transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(168,255,120,0.06);border-color:rgba(168,255,120,0.2)">⚖️</div>
+        <div class="goal-name" style="color:#a8ff78">Maintenance</div>
+        <div class="goal-desc">Sustain your physique with balanced macros and moderate training. The long game.</div>
+        <div class="goal-tags"><span class="goal-tag">Balanced</span><span class="goal-tag">Sustainable</span><span class="goal-tag">Moderate</span></div>
+        <div class="goal-open-btn" style="color:#a8ff78">Open Full Plan <div class="goal-arrow" style="background:rgba(168,255,120,0.1);color:#a8ff78">→</div></div>
+      </div>
+
+      <div class="goal-card" onclick="openPlan('cut')" style="--gc:#FF69B4">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(255,105,180,0.06),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,#FF69B4,transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(255,105,180,0.06);border-color:rgba(255,105,180,0.2)">✂️</div>
+        <div class="goal-name" style="color:#FF69B4">Body Cutting</div>
+        <div class="goal-desc">Advanced shredding protocol. Carb cycling, fasted cardio, and precision nutrition to reveal definition.</div>
+        <div class="goal-tags"><span class="goal-tag">Shredding</span><span class="goal-tag">Carb Cycling</span><span class="goal-tag">Advanced</span></div>
+        <div class="goal-open-btn" style="color:#FF69B4">Open Full Plan <div class="goal-arrow" style="background:rgba(255,105,180,0.1);color:#FF69B4">→</div></div>
+      </div>
+
+      <div class="goal-card" onclick="openPlan('endurance')" style="--gc:#7B61FF">
+        <div class="goal-card-bg" style="background:radial-gradient(ellipse at top left,rgba(123,97,255,0.08),transparent 60%)"></div>
+        <div class="goal-card-top-line" style="background:linear-gradient(90deg,#7B61FF,transparent)"></div>
+        <div class="goal-icon-wrap" style="background:rgba(123,97,255,0.06);border-color:rgba(123,97,255,0.2)">🏃</div>
+        <div class="goal-name" style="color:#7B61FF">Endurance</div>
+        <div class="goal-desc">Carb-forward fuel for runners and athletes. Sustained energy, peak stamina, fast recovery.</div>
+        <div class="goal-tags"><span class="goal-tag">Cardio</span><span class="goal-tag">Carb-Forward</span><span class="goal-tag">Athlete</span></div>
+        <div class="goal-open-btn" style="color:#7B61FF">Open Full Plan <div class="goal-arrow" style="background:rgba(123,97,255,0.1);color:#7B61FF">→</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE: DETAIL ===== -->
+<div id="page-detail" class="page">
+  <div class="detail-header" id="detailHeader"></div>
+  <div class="detail-tabs" id="detailTabs"></div>
+  <div id="detailContent"></div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),curRing=document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+setInterval(()=>{rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;curRing.style.left=rx+'px';curRing.style.top=ry+'px';},16);
+
+// PAGES
+let currentDiet='veg';
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function setNavActive(el){document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));el.classList.add('active');}
+function scrollToCalc(){goPage('plans');setTimeout(()=>document.getElementById('calcAnchor').scrollIntoView({behavior:'smooth'}),100);}
+function setDiet(t,btn){
+  currentDiet=t;
+  document.querySelectorAll('.diet-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// MACRO CALCULATOR
+function calcMacros(){
+  const w=parseFloat(document.getElementById('cWeight').value);
+  const goal=document.getElementById('cGoal').value;
+  const act=parseFloat(document.getElementById('cActivity').value);
+  if(!w||w<30||w>300){alert('Enter a valid body weight (30–300 kg)');return;}
+  let bmr=w*22; // rough BMR
+  let tdee=Math.round(bmr*act);
+  let calAdj={loss:-500,gain:+600,muscle:+300,maintain:0,cut:-400,endurance:+200};
+  let calories=tdee+(calAdj[goal]||0);
+  let proMult={loss:2.2,gain:1.6,muscle:2.0,maintain:1.6,cut:2.4,endurance:1.4};
+  let protein=Math.round(w*(proMult[goal]||1.8));
+  let fat=Math.round(calories*0.25/9);
+  let carbs=Math.round((calories-protein*4-fat*9)/4);
+  let water=(w*0.033+0.5).toFixed(1);
+  document.getElementById('cr-cal').textContent=calories.toLocaleString();
+  document.getElementById('cr-pro').textContent=protein;
+  document.getElementById('cr-carb').textContent=Math.max(0,carbs);
+  document.getElementById('cr-fat').textContent=fat;
+  document.getElementById('cr-water').textContent=water;
+  const r=document.getElementById('calcResults');
+  r.classList.remove('show');void r.offsetWidth;r.classList.add('show');
+}
+
+// ============ PLAN DATA ============
+const PLANS = {
+  loss:{ label:'Weight Loss', icon:'🔥', color:'#FF3D00', diet_type:'Fat Burn Protocol',
+    desc:'Strategic caloric deficit with high-protein meals to shred fat while protecting lean muscle. HIIT + strength paired.',
+    veg:{
+      meals:[
+        {time:'6:30 AM',name:'Wake-Up Detox',detail:'Warm lemon water + 1 tsp apple cider vinegar + pinch of cayenne',macros:'Carbs: 2g | Pro: 0g | Fat: 0g',cal:'5'},
+        {time:'7:30 AM',name:'Breakfast',detail:'Moong dal chilla (2) + mint chutney + 1 boiled egg equivalent in tofu + green tea',macros:'Carbs: 32g | Pro: 18g | Fat: 7g',cal:'260'},
+        {time:'10:30 AM',name:'Mid-Morning',detail:'1 apple + 5 almonds + 1 glass water',macros:'Carbs: 20g | Pro: 3g | Fat: 4g',cal:'115'},
+        {time:'1:00 PM',name:'Lunch',detail:'Brown rice (½ cup) + moong dal (1 cup) + sautéed spinach + cucumber-tomato salad + low-fat curd',macros:'Carbs: 55g | Pro: 22g | Fat: 5g',cal:'440'},
+        {time:'4:00 PM',name:'Pre-Workout',detail:'Roasted chana (30g) + black coffee (no sugar)',macros:'Carbs: 16g | Pro: 7g | Fat: 2g',cal:'120'},
+        {time:'7:30 PM',name:'Post-Workout Dinner',detail:'Paneer bhurji (100g paneer) + 2 multigrain rotis + stir-fried veggies (no oil)',macros:'Carbs: 42g | Pro: 28g | Fat: 11g',cal:'400'},
+        {time:'9:30 PM',name:'Night',detail:'Turmeric milk (low-fat, 200ml) or chamomile tea',macros:'Carbs: 9g | Pro: 4g | Fat: 1g',cal:'75'},
+      ],total:'1,415 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'6:30 AM',name:'Wake-Up Detox',detail:'Warm lemon water + 1 tsp ACV + 1 glass water',macros:'Carbs: 2g | Pro: 0g | Fat: 0g',cal:'5'},
+        {time:'7:30 AM',name:'Breakfast',detail:'3 egg whites + 1 whole egg omelette (no oil) + 1 multigrain toast + black coffee',macros:'Carbs: 18g | Pro: 22g | Fat: 8g',cal:'265'},
+        {time:'10:30 AM',name:'Mid-Morning',detail:'1 orange + 10 almonds + water',macros:'Carbs: 18g | Pro: 4g | Fat: 5g',cal:'140'},
+        {time:'1:00 PM',name:'Lunch',detail:'Grilled chicken breast (150g) + ½ cup brown rice + steamed broccoli + salad + lemon dressing',macros:'Carbs: 40g | Pro: 38g | Fat: 6g',cal:'400'},
+        {time:'4:00 PM',name:'Pre-Workout',detail:'2 boiled eggs + black coffee',macros:'Carbs: 1g | Pro: 12g | Fat: 9g',cal:'135'},
+        {time:'7:30 PM',name:'Post-Workout Dinner',detail:'Grilled white fish (150g) + stir-fried vegetables + 1 multigrain roti',macros:'Carbs: 30g | Pro: 35g | Fat: 6g',cal:'340'},
+        {time:'9:30 PM',name:'Night',detail:'Low-fat curd (150g) + a pinch of cumin',macros:'Carbs: 10g | Pro: 9g | Fat: 1g',cal:'90'},
+      ],total:'1,375 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Cardio + Core',type:'Cardio',exercises:[
+        {name:'Jump Rope',muscle:'Full Body',sets:'4',reps:'3 min',rest:'60s'},
+        {name:'High Knees',muscle:'Core / Cardio',sets:'4',reps:'40 reps',rest:'30s'},
+        {name:'Burpees',muscle:'Full Body',sets:'4',reps:'15',rest:'60s'},
+        {name:'Plank Hold',muscle:'Core',sets:'4',reps:'45s',rest:'30s'},
+        {name:'Mountain Climbers',muscle:'Core / Cardio',sets:'3',reps:'30',rest:'30s'},
+        {name:'Bicycle Crunches',muscle:'Abs',sets:'3',reps:'25',rest:'30s'},
+      ],tips:['Do this fasted for max fat burn','Stay in 70-80% max heart rate zone','Keep rest periods short']},
+      {day:'Tuesday',focus:'Full Body Strength',type:'Strength',exercises:[
+        {name:'Bodyweight Squats',muscle:'Quads / Glutes',sets:'4',reps:'20',rest:'45s'},
+        {name:'Push-Ups',muscle:'Chest / Triceps',sets:'4',reps:'15',rest:'45s'},
+        {name:'Dumbbell Row',muscle:'Back / Biceps',sets:'4',reps:'12/side',rest:'45s'},
+        {name:'Reverse Lunges',muscle:'Legs / Glutes',sets:'3',reps:'12/leg',rest:'45s'},
+        {name:'Shoulder Press',muscle:'Shoulders',sets:'3',reps:'12',rest:'45s'},
+        {name:'Leg Raises',muscle:'Lower Abs',sets:'3',reps:'15',rest:'30s'},
+      ],tips:['Focus on time under tension','Use moderate weight, higher reps','Superset upper/lower for cardio effect']},
+      {day:'Wednesday',focus:'HIIT Blast',type:'HIIT',exercises:[
+        {name:'Sprint Intervals',muscle:'Full Body',sets:'8',reps:'20s on / 40s off',rest:'—'},
+        {name:'Box Jumps / Step-Ups',muscle:'Legs / Cardio',sets:'4',reps:'12',rest:'30s'},
+        {name:'Kettlebell Swings',muscle:'Glutes / Back',sets:'4',reps:'20',rest:'45s'},
+        {name:'Battle Rope Slams',muscle:'Upper Body',sets:'4',reps:'20s',rest:'30s'},
+        {name:'Jump Squats',muscle:'Legs',sets:'4',reps:'15',rest:'30s'},
+        {name:'Sprawls',muscle:'Core / Cardio',sets:'3',reps:'10',rest:'30s'},
+      ],tips:['All-out effort on every round','20 min of HIIT = 60 min steady cardio','Cool down with 5-min walk']},
+      {day:'Thursday',focus:'Active Rest / Yoga',type:'Rest',exercises:[
+        {name:'Sun Salutation (Surya Namaskar)',muscle:'Full Body Mobility',sets:'3',reps:'rounds',rest:'60s'},
+        {name:'Hip Flexor Stretch',muscle:'Hip / Lower Back',sets:'3',reps:'60s/side',rest:'—'},
+        {name:'Downward Dog',muscle:'Hamstrings / Back',sets:'3',reps:'60s',rest:'—'},
+        {name:'Foam Rolling',muscle:'Full Body',sets:'1',reps:'15 min',rest:'—'},
+        {name:'Light Walk',muscle:'Cardio',sets:'1',reps:'20–30 min',rest:'—'},
+      ],tips:['Recovery is part of the program','Hydrate well today','Sleep 8 hours tonight']},
+      {day:'Friday',focus:'Upper Body + Cardio',type:'Strength',exercises:[
+        {name:'Incline Push-Ups / Push-Ups',muscle:'Chest',sets:'4',reps:'15',rest:'45s'},
+        {name:'Dumbbell Shoulder Press',muscle:'Shoulders',sets:'4',reps:'12',rest:'45s'},
+        {name:'Lat Pulldowns / Pull-Ups',muscle:'Back',sets:'4',reps:'10',rest:'60s'},
+        {name:'Dumbbell Bicep Curls',muscle:'Biceps',sets:'3',reps:'15',rest:'45s'},
+        {name:'Tricep Dips',muscle:'Triceps',sets:'3',reps:'15',rest:'45s'},
+        {name:'Treadmill Brisk Walk',muscle:'Cardio',sets:'1',reps:'20 min incline',rest:'—'},
+      ],tips:['Superset arms for pump + calorie burn','Control the eccentric (lowering) phase','Finish with 20 min incline walk']},
+      {day:'Saturday',focus:'Full Body Circuit',type:'Circuit',exercises:[
+        {name:'Circuit Round (repeat 4x)',muscle:'Full Body',sets:'4',reps:'rounds',rest:'90s between rounds'},
+        {name:'→ Squat Jumps',muscle:'Legs',sets:'—',reps:'15',rest:'—'},
+        {name:'→ Push-Ups',muscle:'Chest',sets:'—',reps:'12',rest:'—'},
+        {name:'→ Burpees',muscle:'Full Body',sets:'—',reps:'10',rest:'—'},
+        {name:'→ Plank',muscle:'Core',sets:'—',reps:'30s',rest:'—'},
+        {name:'→ Mountain Climbers',muscle:'Core',sets:'—',reps:'20',rest:'—'},
+      ],tips:['Minimum rest for max calorie burn','This is your hardest session of the week','Track your time — try to beat it next week']},
+      {day:'Sunday',focus:'Rest & Stretch',type:'Rest',exercises:[
+        {name:'Full Body Stretch Routine',muscle:'All Muscles',sets:'1',reps:'30 min',rest:'—'},
+        {name:'Walk (optional)',muscle:'Active Recovery',sets:'1',reps:'20 min slow',rest:'—'},
+        {name:'Deep Breathing / Meditation',muscle:'Mental Recovery',sets:'1',reps:'10 min',rest:'—'},
+      ],tips:['Do not train hard today','Prep your meals for next week','Sleep well — fat burns during deep sleep']},
+    ],
+    water:[
+      {time:'6:30 AM',amount:'400 ml',pct:40},
+      {time:'Before Breakfast',amount:'200 ml',pct:20},
+      {time:'Mid-Morning',amount:'300 ml',pct:30},
+      {time:'Before Lunch',amount:'300 ml',pct:30},
+      {time:'3:00 PM',amount:'400 ml',pct:40},
+      {time:'Pre-Workout',amount:'400 ml',pct:40},
+      {time:'Post-Workout',amount:'500 ml',pct:50},
+      {time:'Before Dinner',amount:'300 ml',pct:30},
+      {time:'Before Bed',amount:'200 ml',pct:20},
+    ],
+    tips:[
+      {icon:'🚫',title:'No Processed Sugar',text:'Cut refined sugars and white flour entirely for the first 4 weeks. Replace with natural alternatives.'},
+      {icon:'⏰',title:'Eat Slowly',text:'<strong>Chew each bite 20–30 times.</strong> Your brain takes 20 min to register fullness.'},
+      {icon:'🌙',title:'Last Meal Timing',text:'Finish eating <strong>at least 2 hours before sleep</strong> to optimise overnight fat oxidation.'},
+      {icon:'😴',title:'Sleep is Non-Negotiable',text:'7–8 hours of quality sleep controls cortisol. High cortisol = fat storage and muscle loss.'},
+      {icon:'📊',title:'Track for 2 Weeks',text:'Log calories the first 2 weeks to build intuition. Use MyFitnessPal or a simple notebook.'},
+    ],
+    macros:{protein:'35%',carbs:'35%',fat:'30%'}
+  },
+
+  muscle:{ label:'Muscle Gain', icon:'💪', color:'#00E5FF', diet_type:'Hypertrophy Protocol',
+    desc:'Maximum muscle hypertrophy. Progressive overload, anabolic meal timing, high-protein fueling.',
+    veg:{
+      meals:[
+        {time:'5:45 AM',name:'Pre-Workout',detail:'1 banana + 30g soya protein / whey (veg) + black coffee',macros:'Carbs: 30g | Pro: 28g | Fat: 2g',cal:'250'},
+        {time:'9:00 AM',name:'Post-Workout Breakfast',detail:'Paneer scramble (200g) + 3 multigrain rotis + 1 glass full-fat milk + 1 banana',macros:'Carbs: 72g | Pro: 42g | Fat: 18g',cal:'680'},
+        {time:'12:00 PM',name:'Lunch',detail:'Soya chunks curry (150g) + 1.5 cups brown rice + dal + curd + salad',macros:'Carbs: 80g | Pro: 38g | Fat: 10g',cal:'750'},
+        {time:'3:30 PM',name:'Anabolic Snack',detail:'Greek yogurt (200g) + mixed nuts (30g) + 1 banana',macros:'Carbs: 44g | Pro: 20g | Fat: 12g',cal:'380'},
+        {time:'7:00 PM',name:'Dinner',detail:'Paneer tikka (200g) + quinoa (¾ cup) + stir-fried veggies + salad',macros:'Carbs: 55g | Pro: 42g | Fat: 16g',cal:'680'},
+        {time:'10:00 PM',name:'Casein Meal',detail:'Cottage cheese (150g) + 1 glass milk + 5 walnuts',macros:'Carbs: 18g | Pro: 28g | Fat: 14g',cal:'340'},
+      ],total:'3,080 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'5:45 AM',name:'Pre-Workout',detail:'1 banana + 5 egg whites + black coffee (no sugar)',macros:'Carbs: 28g | Pro: 20g | Fat: 1g',cal:'210'},
+        {time:'9:00 AM',name:'Post-Workout Breakfast',detail:'3 whole eggs + 3 egg whites omelette + 3 multigrain rotis + 1 glass milk',macros:'Carbs: 65g | Pro: 52g | Fat: 20g',cal:'720'},
+        {time:'12:00 PM',name:'Lunch',detail:'Chicken breast (200g) + 1.5 cups brown rice + broccoli stir-fry + salad',macros:'Carbs: 72g | Pro: 55g | Fat: 8g',cal:'780'},
+        {time:'3:30 PM',name:'Anabolic Snack',detail:'Tuna (1 can, 120g) + brown rice crackers + mixed nuts (20g)',macros:'Carbs: 28g | Pro: 32g | Fat: 12g',cal:'360'},
+        {time:'7:00 PM',name:'Dinner',detail:'Grilled salmon / chicken thigh (200g) + sweet potato (150g) + asparagus + salad',macros:'Carbs: 48g | Pro: 48g | Fat: 18g',cal:'680'},
+        {time:'10:00 PM',name:'Casein Meal',detail:'Cottage cheese (200g) + 1 glass warm milk + 5 walnuts',macros:'Carbs: 18g | Pro: 32g | Fat: 14g',cal:'350'},
+      ],total:'3,100 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Chest + Shoulders (Push)',type:'Push',exercises:[
+        {name:'Incline Barbell Bench Press',muscle:'Upper Chest',sets:'4',reps:'6–8',rest:'90s'},
+        {name:'Flat Dumbbell Press',muscle:'Mid Chest',sets:'4',reps:'8–10',rest:'75s'},
+        {name:'Cable Flyes',muscle:'Chest Isolation',sets:'3',reps:'12–15',rest:'60s'},
+        {name:'Overhead Barbell Press',muscle:'Front / Mid Delts',sets:'4',reps:'8',rest:'90s'},
+        {name:'Dumbbell Lateral Raises',muscle:'Side Delts',sets:'4',reps:'15',rest:'45s'},
+        {name:'Face Pulls',muscle:'Rear Delts / Rotator Cuff',sets:'3',reps:'15',rest:'45s'},
+        {name:'Tricep Rope Pushdown',muscle:'Triceps',sets:'4',reps:'12',rest:'60s'},
+        {name:'Overhead Tricep Extension',muscle:'Triceps Long Head',sets:'3',reps:'12',rest:'60s'},
+      ],tips:['Warm up rotator cuffs with band work first','Focus on mind-muscle connection on chest','Don\'t neglect rear delts — prevents injury']},
+      {day:'Tuesday',focus:'Back + Biceps (Pull)',type:'Pull',exercises:[
+        {name:'Weighted Pull-Ups',muscle:'Lats / Upper Back',sets:'4',reps:'6–8',rest:'90s'},
+        {name:'Barbell Bent-over Row',muscle:'Mid Back / Lats',sets:'4',reps:'6–8',rest:'90s'},
+        {name:'Seated Cable Row',muscle:'Mid Back',sets:'4',reps:'10–12',rest:'60s'},
+        {name:'Single Arm Dumbbell Row',muscle:'Lats',sets:'3',reps:'10/side',rest:'60s'},
+        {name:'Lat Pulldown (Wide)',muscle:'Lats',sets:'3',reps:'12',rest:'60s'},
+        {name:'EZ Bar Curls',muscle:'Biceps',sets:'4',reps:'10–12',rest:'60s'},
+        {name:'Hammer Curls',muscle:'Biceps / Brachialis',sets:'3',reps:'12',rest:'45s'},
+        {name:'Incline Dumbbell Curls',muscle:'Biceps Stretch',sets:'3',reps:'12',rest:'45s'},
+      ],tips:['Initiate every pull with your back, not arms','Dead hang for 10s before each pull-up set','Supinate wrist at top of curl for peak contraction']},
+      {day:'Wednesday',focus:'Legs (Quad Focus)',type:'Legs',exercises:[
+        {name:'Barbell Back Squats',muscle:'Quads / Glutes / Core',sets:'5',reps:'6–8',rest:'2 min'},
+        {name:'Leg Press',muscle:'Quads / Glutes',sets:'4',reps:'10–12',rest:'90s'},
+        {name:'Bulgarian Split Squat',muscle:'Quads / Glutes',sets:'3',reps:'10/leg',rest:'75s'},
+        {name:'Leg Extension',muscle:'Quad Isolation',sets:'4',reps:'15',rest:'45s'},
+        {name:'Seated Calf Raises',muscle:'Calves',sets:'5',reps:'15–20',rest:'45s'},
+        {name:'Ab Cable Crunches',muscle:'Abs',sets:'4',reps:'15',rest:'45s'},
+        {name:'Hanging Leg Raises',muscle:'Lower Abs',sets:'3',reps:'15',rest:'45s'},
+      ],tips:['Squat deep — below parallel for full glute activation','Use a belt for heavy squats above 80% 1RM','Calves need high volume — don\'t skip them']},
+      {day:'Thursday',focus:'Arms + Core',type:'Arms',exercises:[
+        {name:'Close Grip Bench Press',muscle:'Triceps / Chest',sets:'4',reps:'8–10',rest:'75s'},
+        {name:'Skull Crushers',muscle:'Triceps',sets:'4',reps:'10–12',rest:'60s'},
+        {name:'Preacher Curls',muscle:'Biceps',sets:'4',reps:'10–12',rest:'60s'},
+        {name:'Cable Curls (both hands)',muscle:'Biceps',sets:'3',reps:'12–15',rest:'45s'},
+        {name:'Dips (chest version)',muscle:'Chest / Triceps',sets:'3',reps:'Max',rest:'60s'},
+        {name:'Plank Variations',muscle:'Core',sets:'4',reps:'45s each',rest:'30s'},
+        {name:'Dragon Flag (or negatives)',muscle:'Full Core',sets:'3',reps:'5–8',rest:'60s'},
+      ],tips:['Arms respond to isolation work at high volume','Keep elbows fixed during all curl movements','Dragon flags build insane core strength']},
+      {day:'Friday',focus:'Chest + Back (Volume)',type:'Push/Pull',exercises:[
+        {name:'Flat Barbell Bench Press',muscle:'Chest',sets:'5',reps:'10',rest:'60s'},
+        {name:'T-Bar Row',muscle:'Thick Back',sets:'5',reps:'10',rest:'60s'},
+        {name:'Dumbbell Flyes',muscle:'Chest',sets:'4',reps:'12',rest:'45s'},
+        {name:'Cable Pullover',muscle:'Lats',sets:'4',reps:'12',rest:'45s'},
+        {name:'Push-Up Burnout',muscle:'Chest / Triceps',sets:'3',reps:'Max',rest:'60s'},
+        {name:'Inverted Rows',muscle:'Back / Biceps',sets:'3',reps:'Max',rest:'60s'},
+      ],tips:['This is a volume day — go lighter, more reps','Supersetting push/pull saves time and increases intensity','Feel the pump — that\'s a sign of cell swelling']},
+      {day:'Saturday',focus:'Legs (Hamstring Focus)',type:'Legs',exercises:[
+        {name:'Romanian Deadlifts',muscle:'Hamstrings / Glutes',sets:'4',reps:'8–10',rest:'90s'},
+        {name:'Lying Leg Curl',muscle:'Hamstrings',sets:'4',reps:'12',rest:'60s'},
+        {name:'Sumo Deadlift',muscle:'Inner Hamstrings / Glutes',sets:'4',reps:'6–8',rest:'90s'},
+        {name:'Glute Ham Raise',muscle:'Hamstrings',sets:'3',reps:'10',rest:'75s'},
+        {name:'Standing Calf Raises',muscle:'Calves',sets:'5',reps:'20',rest:'30s'},
+        {name:'Leg Press (feet high)',muscle:'Hamstrings / Glutes',sets:'3',reps:'15',rest:'60s'},
+      ],tips:['Hinge at hips for RDL — not a squat movement','Full stretch at bottom of leg curl = more growth','Train calves at end every session for maximum volume']},
+      {day:'Sunday',focus:'Active Rest / Mobility',type:'Rest',exercises:[
+        {name:'Hip Mobility Flow',muscle:'Hips / Lower Back',sets:'1',reps:'15 min',rest:'—'},
+        {name:'Shoulder Mobility Drills',muscle:'Shoulders / Upper Back',sets:'1',reps:'10 min',rest:'—'},
+        {name:'Light Swimming / Walk',muscle:'Active Recovery',sets:'1',reps:'20–30 min',rest:'—'},
+        {name:'Foam Rolling',muscle:'All Muscles',sets:'1',reps:'15 min',rest:'—'},
+      ],tips:['This is the day your muscles actually grow','Eat your protein even on rest days','Prioritise 9 hours of sleep tonight']},
+    ],
+    water:[
+      {time:'5:30 AM',amount:'400 ml (pre-workout hydration)',pct:40},
+      {time:'During Workout',amount:'600 ml (100ml every 10 min)',pct:60},
+      {time:'Post-Workout',amount:'500 ml with protein',pct:50},
+      {time:'Mid-Morning',amount:'300 ml',pct:30},
+      {time:'Pre-Lunch',amount:'300 ml',pct:30},
+      {time:'Afternoon',amount:'500 ml',pct:50},
+      {time:'Pre-Dinner',amount:'300 ml',pct:30},
+      {time:'Before Bed',amount:'200 ml',pct:20},
+    ],
+    tips:[
+      {icon:'⏱️',title:'Anabolic Window',text:'Consume protein within <strong>45 minutes post-workout</strong> to maximise muscle protein synthesis.'},
+      {icon:'🥩',title:'Protein Target',text:'Aim for <strong>1.8–2.2g per kg of bodyweight</strong> daily. Spread across 5–6 meals, not 1–2 large ones.'},
+      {icon:'📈',title:'Progressive Overload',text:'Add weight or reps <strong>every week</strong>. Without progressive overload, there is no growth stimulus.'},
+      {icon:'💤',title:'Sleep = Growth',text:'<strong>80% of muscle repair</strong> happens during deep sleep (stages 3–4). 8 hours minimum.'},
+      {icon:'📓',title:'Track Your Lifts',text:'Log every compound lift. If your numbers aren\'t going up, your muscles aren\'t growing.'},
+    ],
+    macros:{protein:'40%',carbs:'40%',fat:'20%'}
+  },
+
+  gain:{ label:'Weight Gain', icon:'📈', color:'#FFB300', diet_type:'Lean Bulk Protocol',
+    desc:'Caloric surplus with nutrient-dense whole foods. Add healthy weight progressively with minimal fat gain.',
+    veg:{
+      meals:[
+        {time:'7:00 AM',name:'Morning Booster',detail:'1 banana + 1 glass full-fat milk + 1 tbsp peanut butter',macros:'Carbs: 45g | Pro: 12g | Fat: 12g',cal:'280'},
+        {time:'8:30 AM',name:'Breakfast',detail:'4 multigrain rotis + paneer curry (150g) + 1 cup whole milk lassi',macros:'Carbs: 88g | Pro: 38g | Fat: 22g',cal:'720'},
+        {time:'11:00 AM',name:'Mid-Morning',detail:'Mixed nuts (30g) + dried fruits (20g) + 1 glass mango lassi',macros:'Carbs: 52g | Pro: 10g | Fat: 14g',cal:'380'},
+        {time:'1:30 PM',name:'Lunch',detail:'White rice (1.5 cups) + rajma curry (1.5 cups) + 2 rotis + curd + 1 tbsp ghee',macros:'Carbs: 120g | Pro: 32g | Fat: 18g',cal:'880'},
+        {time:'4:00 PM',name:'Evening Snack',detail:'Peanut butter sandwich (2 slices whole wheat) + banana milkshake (full fat)',macros:'Carbs: 72g | Pro: 18g | Fat: 18g',cal:'480'},
+        {time:'7:30 PM',name:'Dinner',detail:'Dal makhani (1.5 cups) + 3 rotis + aloo sabzi + 1 cup rice + salad',macros:'Carbs: 110g | Pro: 28g | Fat: 20g',cal:'780'},
+        {time:'10:00 PM',name:'Before Bed',detail:'1 glass warm milk + 1 tbsp honey + 5 soaked almonds',macros:'Carbs: 24g | Pro: 9g | Fat: 8g',cal:'220'},
+      ],total:'3,740 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'7:00 AM',name:'Morning Booster',detail:'2 whole eggs + 1 glass whole milk + 1 banana',macros:'Carbs: 40g | Pro: 22g | Fat: 14g',cal:'330'},
+        {time:'8:30 AM',name:'Breakfast',detail:'4 egg omelette (2 whole + 2 whites) + 3 rotis + 1 glass whole milk',macros:'Carbs: 72g | Pro: 42g | Fat: 20g',cal:'760'},
+        {time:'11:00 AM',name:'Mid-Morning',detail:'Chicken sandwich (150g chicken) + 1 banana + 1 glass OJ',macros:'Carbs: 65g | Pro: 32g | Fat: 10g',cal:'520'},
+        {time:'1:30 PM',name:'Lunch',detail:'Chicken curry (200g) + 2 cups white rice + dal + salad + 1 tbsp ghee',macros:'Carbs: 110g | Pro: 48g | Fat: 20g',cal:'920'},
+        {time:'4:00 PM',name:'Evening Snack',detail:'Tuna toast (2 slices) + 2 boiled eggs + 1 glass milk',macros:'Carbs: 38g | Pro: 38g | Fat: 14g',cal:'460'},
+        {time:'7:30 PM',name:'Dinner',detail:'Chicken/mutton biryani (2 cups) + raita + salad',macros:'Carbs: 90g | Pro: 45g | Fat: 22g',cal:'820'},
+        {time:'10:00 PM',name:'Before Bed',detail:'1 glass warm milk + 2 whole eggs + 1 banana',macros:'Carbs: 36g | Pro: 28g | Fat: 16g',cal:'380'},
+      ],total:'4,190 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Chest + Triceps (Heavy)',type:'Push',exercises:[
+        {name:'Flat Barbell Bench Press',muscle:'Chest',sets:'5',reps:'5',rest:'2 min'},
+        {name:'Incline Dumbbell Press',muscle:'Upper Chest',sets:'4',reps:'8',rest:'90s'},
+        {name:'Weighted Dips',muscle:'Chest / Triceps',sets:'4',reps:'8',rest:'90s'},
+        {name:'Close Grip Bench Press',muscle:'Triceps',sets:'4',reps:'8',rest:'90s'},
+        {name:'Skull Crushers',muscle:'Triceps',sets:'3',reps:'10',rest:'60s'},
+      ],tips:['Focus on heavy compounds for mass','Eat your pre-workout meal 1 hour before','Log every lift — progressive overload is everything']},
+      {day:'Tuesday',focus:'Back + Biceps (Heavy)',type:'Pull',exercises:[
+        {name:'Conventional Deadlift',muscle:'Full Back / Hamstrings',sets:'5',reps:'5',rest:'2.5 min'},
+        {name:'Barbell Row',muscle:'Mid / Upper Back',sets:'4',reps:'6',rest:'2 min'},
+        {name:'Weighted Pull-Ups',muscle:'Lats',sets:'4',reps:'6–8',rest:'90s'},
+        {name:'Barbell Curls',muscle:'Biceps',sets:'4',reps:'8',rest:'60s'},
+        {name:'Incline Dumbbell Curls',muscle:'Biceps',sets:'3',reps:'10',rest:'60s'},
+      ],tips:['Deadlift is the king of mass builders','Keep your back neutral on all rows','Eat 50g+ carbs within 1 hour post-workout']},
+      {day:'Wednesday',focus:'Legs (Squat Focus)',type:'Legs',exercises:[
+        {name:'Barbell Back Squat',muscle:'Quads / Glutes',sets:'5',reps:'5',rest:'2.5 min'},
+        {name:'Front Squat',muscle:'Quads',sets:'3',reps:'6',rest:'2 min'},
+        {name:'Leg Press',muscle:'Quads / Glutes',sets:'4',reps:'10',rest:'90s'},
+        {name:'Standing Calf Raises',muscle:'Calves',sets:'5',reps:'15',rest:'45s'},
+        {name:'Ab Wheel Rollout',muscle:'Core',sets:'4',reps:'10',rest:'60s'},
+      ],tips:['Squatting heavy with correct form = maximum growth','Eat your biggest meal of the day after this session','Calves need love — 5 sets every leg session']},
+      {day:'Thursday',focus:'Shoulders + Traps',type:'Push',exercises:[
+        {name:'Overhead Barbell Press',muscle:'All Delts / Traps',sets:'5',reps:'5',rest:'2 min'},
+        {name:'Dumbbell Lateral Raises',muscle:'Side Delts',sets:'4',reps:'12',rest:'45s'},
+        {name:'Barbell Shrugs',muscle:'Traps',sets:'5',reps:'10',rest:'60s'},
+        {name:'Face Pulls',muscle:'Rear Delts',sets:'4',reps:'15',rest:'45s'},
+        {name:'Arnold Press',muscle:'Full Delts',sets:'3',reps:'10',rest:'60s'},
+      ],tips:['Big overhead press = big shoulder development','Traps are worked with heavy shrugs and deadlifts','Don\'t neglect rear delts']},
+      {day:'Friday',focus:'Full Body Power',type:'Full Body',exercises:[
+        {name:'Power Cleans',muscle:'Full Body',sets:'5',reps:'3',rest:'2 min'},
+        {name:'Bench Press',muscle:'Chest',sets:'4',reps:'6',rest:'90s'},
+        {name:'Barbell Row',muscle:'Back',sets:'4',reps:'6',rest:'90s'},
+        {name:'Romanian Deadlift',muscle:'Hamstrings',sets:'4',reps:'8',rest:'90s'},
+        {name:'Dips',muscle:'Chest/Triceps',sets:'3',reps:'Max',rest:'60s'},
+      ],tips:['Power cleans build explosive strength and mass','This session is about full body stimulus','Eat big tonight — this is your recovery window']},
+      {day:'Saturday',focus:'Arms + Core (Volume)',type:'Arms',exercises:[
+        {name:'Superset: Barbell Curl + Tricep Pushdown',muscle:'Biceps + Triceps',sets:'4',reps:'10+10',rest:'60s'},
+        {name:'Hammer Curls',muscle:'Brachialis',sets:'4',reps:'12',rest:'45s'},
+        {name:'Overhead Tricep Extension',muscle:'Triceps',sets:'4',reps:'12',rest:'45s'},
+        {name:'Preacher Curls',muscle:'Biceps',sets:'3',reps:'12',rest:'45s'},
+        {name:'Cable Core Twists',muscle:'Obliques',sets:'3',reps:'15/side',rest:'30s'},
+      ],tips:['High volume arms today for extra size','Pump the arms — squeeze at peak contraction','Fuel with extra carbs today']},
+      {day:'Sunday',focus:'Rest & Eat Big',type:'Rest',exercises:[
+        {name:'Light walk',muscle:'Active Recovery',sets:'1',reps:'20 min',rest:'—'},
+        {name:'Stretching',muscle:'Full Body',sets:'1',reps:'20 min',rest:'—'},
+        {name:'Meal Prep for Week',muscle:'—',sets:'1',reps:'Cook in bulk',rest:'—'},
+      ],tips:['Eat all your calories today even on rest','This is when your muscles are repairing most','Plan your week of meals in advance']},
+    ],
+    water:[
+      {time:'Morning',amount:'500 ml (with breakfast)',pct:50},
+      {time:'Mid-Morning',amount:'300 ml',pct:30},
+      {time:'Pre-Lunch',amount:'200 ml (avoid too much)',pct:20},
+      {time:'Afternoon',amount:'400 ml',pct:40},
+      {time:'Pre-Workout',amount:'400 ml',pct:40},
+      {time:'During Workout',amount:'500 ml',pct:50},
+      {time:'Post-Workout',amount:'400 ml',pct:40},
+      {time:'Evening',amount:'400 ml',pct:40},
+      {time:'Before Bed',amount:'200 ml',pct:20},
+    ],
+    tips:[
+      {icon:'⏰',title:'Eat Every 2.5–3 Hours',text:'Never go longer than 3 hours without food. Your muscles need constant amino acid availability.'},
+      {icon:'🌅',title:'Never Skip Breakfast',text:'Breakfast breaks an 8-hour fast. <strong>Your first meal sets your metabolism</strong> for the day.'},
+      {icon:'🥑',title:'Calorie-Dense Foods',text:'Add ghee, avocado, nut butters, and whole milk. These are calorie-efficient mass builders.'},
+      {icon:'🏋️',title:'Heavy Compounds',text:'Minimise cardio. Focus on <strong>heavy squats, deadlifts, bench, and rows</strong> for maximum mass.'},
+      {icon:'😴',title:'Sleep 8+ Hours',text:'Growth hormone peaks during stages 3–4 of sleep. <strong>Sleep is your most anabolic drug</strong>.'},
+    ],
+    macros:{protein:'30%',carbs:'50%',fat:'20%'}
+  },
+
+  maintain:{ label:'Maintenance', icon:'⚖️', color:'#a8ff78', diet_type:'Equilibrium Protocol',
+    desc:'Sustain your physique with balanced macros and moderate training. The sustainable long game.',
+    veg:{
+      meals:[
+        {time:'7:30 AM',name:'Breakfast',detail:'Oats porridge (1 cup cooked) + 1 banana + 1 tbsp peanut butter + green tea',macros:'Carbs: 60g | Pro: 14g | Fat: 10g',cal:'420'},
+        {time:'10:30 AM',name:'Snack',detail:'Mixed fruits bowl (seasonal) + 10 cashews',macros:'Carbs: 30g | Pro: 4g | Fat: 6g',cal:'180'},
+        {time:'1:30 PM',name:'Lunch',detail:'Dal (1 cup) + rice (1 cup) + sabzi + 2 rotis + curd + salad',macros:'Carbs: 85g | Pro: 24g | Fat: 12g',cal:'680'},
+        {time:'4:00 PM',name:'Snack',detail:'Sprouts chaat (1 bowl) + 1 glass buttermilk',macros:'Carbs: 22g | Pro: 10g | Fat: 2g',cal:'200'},
+        {time:'8:00 PM',name:'Dinner',detail:'Palak paneer (100g paneer) + 2 rotis + dal soup + salad',macros:'Carbs: 48g | Pro: 28g | Fat: 14g',cal:'580'},
+        {time:'10:00 PM',name:'Optional',detail:'1 glass low-fat milk or herbal tea',macros:'Carbs: 9g | Pro: 4g | Fat: 1g',cal:'80'},
+      ],total:'2,140 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'7:30 AM',name:'Breakfast',detail:'3 egg omelette + 2 multigrain toasts + 1 glass OJ',macros:'Carbs: 42g | Pro: 22g | Fat: 14g',cal:'440'},
+        {time:'10:30 AM',name:'Snack',detail:'Greek yogurt (150g) + 1 fruit + 10 almonds',macros:'Carbs: 28g | Pro: 14g | Fat: 8g',cal:'210'},
+        {time:'1:30 PM',name:'Lunch',detail:'Chicken curry (150g) + 1 cup rice + dal + 2 rotis + salad',macros:'Carbs: 90g | Pro: 40g | Fat: 16g',cal:'720'},
+        {time:'4:00 PM',name:'Snack',detail:'2 boiled eggs + 1 banana',macros:'Carbs: 22g | Pro: 12g | Fat: 10g',cal:'230'},
+        {time:'8:00 PM',name:'Dinner',detail:'Grilled fish (150g) + 2 rotis + mixed veg + salad',macros:'Carbs: 40g | Pro: 34g | Fat: 8g',cal:'540'},
+        {time:'10:00 PM',name:'Optional',detail:'1 glass milk or herbal tea',macros:'Carbs: 9g | Pro: 4g | Fat: 1g',cal:'80'},
+      ],total:'2,220 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Full Body Strength',type:'Strength',exercises:[
+        {name:'Dumbbell Squats',muscle:'Legs',sets:'3',reps:'12',rest:'60s'},
+        {name:'Push-Ups',muscle:'Chest / Triceps',sets:'3',reps:'15',rest:'45s'},
+        {name:'Dumbbell Rows',muscle:'Back',sets:'3',reps:'12/side',rest:'45s'},
+        {name:'Dumbbell Shoulder Press',muscle:'Shoulders',sets:'3',reps:'12',rest:'45s'},
+        {name:'Plank',muscle:'Core',sets:'3',reps:'45s',rest:'30s'},
+      ],tips:['Keep intensity moderate','Focus on form over weight','30 min workout is enough']},
+      {day:'Tuesday',focus:'30 Min Cardio',type:'Cardio',exercises:[
+        {name:'Brisk Walk / Light Jog',muscle:'Cardio',sets:'1',reps:'30 min',rest:'—'},
+        {name:'Dynamic Stretching',muscle:'Mobility',sets:'1',reps:'10 min',rest:'—'},
+      ],tips:['Conversational pace — you should be able to talk','This keeps your heart healthy','Stay hydrated']},
+      {day:'Wednesday',focus:'Upper Body',type:'Strength',exercises:[
+        {name:'Dumbbell Chest Press',muscle:'Chest',sets:'3',reps:'12',rest:'60s'},
+        {name:'Lat Pulldown',muscle:'Back',sets:'3',reps:'12',rest:'60s'},
+        {name:'Arnold Press',muscle:'Shoulders',sets:'3',reps:'12',rest:'60s'},
+        {name:'Bicep Curls',muscle:'Biceps',sets:'3',reps:'12',rest:'45s'},
+        {name:'Tricep Pushdowns',muscle:'Triceps',sets:'3',reps:'12',rest:'45s'},
+      ],tips:['Moderate weight, controlled reps','15–20 min walk afterward','Prioritize quality sleep tonight']},
+      {day:'Thursday',focus:'Yoga / Mobility',type:'Rest',exercises:[
+        {name:'Yoga Flow (Vinyasa)',muscle:'Full Body',sets:'1',reps:'30 min',rest:'—'},
+        {name:'Foam Rolling',muscle:'All Muscles',sets:'1',reps:'10 min',rest:'—'},
+      ],tips:['Essential for long-term joint health','This is active recovery','Mental reset day']},
+      {day:'Friday',focus:'Lower Body',type:'Strength',exercises:[
+        {name:'Goblet Squats',muscle:'Quads / Glutes',sets:'3',reps:'15',rest:'60s'},
+        {name:'Romanian Deadlifts',muscle:'Hamstrings',sets:'3',reps:'12',rest:'60s'},
+        {name:'Walking Lunges',muscle:'Legs',sets:'3',reps:'12/leg',rest:'45s'},
+        {name:'Calf Raises',muscle:'Calves',sets:'3',reps:'20',rest:'30s'},
+        {name:'Leg Raises',muscle:'Core / Hip Flexors',sets:'3',reps:'15',rest:'30s'},
+      ],tips:['Control the descent on all movements','Squeeze glutes at top of every rep','You deserve the weekend rest after this']},
+      {day:'Saturday',focus:'Sports / Outdoor',type:'Active',exercises:[
+        {name:'Basketball / Football / Swimming',muscle:'Full Body',sets:'1',reps:'45–60 min',rest:'—'},
+        {name:'Or: Cycling',muscle:'Cardio / Legs',sets:'1',reps:'30–45 min',rest:'—'},
+      ],tips:['Enjoy physical activity outside the gym','Invite friends — social fitness is sustainable','This is why you train — to live an active life']},
+      {day:'Sunday',focus:'Rest',type:'Rest',exercises:[
+        {name:'Light Stretching',muscle:'Full Body',sets:'1',reps:'15 min',rest:'—'},
+        {name:'Sleep 8 hours',muscle:'Recovery',sets:'1',reps:'8 hours',rest:'—'},
+      ],tips:['Do nothing physically intense','Eat balanced meals','Prepare mentally for the week ahead']},
+    ],
+    water:[
+      {time:'Morning',amount:'400 ml',pct:40},
+      {time:'Before each meal',amount:'200 ml',pct:20},
+      {time:'During workout',amount:'400 ml',pct:40},
+      {time:'Post workout',amount:'300 ml',pct:30},
+      {time:'Evening',amount:'400 ml',pct:40},
+      {time:'Before bed',amount:'200 ml',pct:20},
+    ],
+    tips:[
+      {icon:'📊',title:'Weekly Weigh-In',text:'Weigh yourself <strong>every Monday morning, fasted</strong>. Adjust calories if you drift ±2kg from target.'},
+      {icon:'🍕',title:'80/20 Rule',text:'80% clean, whole foods. 20% enjoyment. <strong>Rigid diets fail — flexible ones succeed.</strong>'},
+      {icon:'🔄',title:'Consistency Wins',text:'Consistency beats perfection. <strong>A mediocre plan done consistently beats a perfect plan done sporadically.</strong>'},
+      {icon:'🎧',title:'Avoid Overtraining',text:'Moderate intensity, 5 days max. More is not always better. Your body needs to recover.'},
+      {icon:'👂',title:'Listen to Your Body',text:'Adjust when needed. Fatigue, low performance, and mood swings are signs to rest.'},
+    ],
+    macros:{protein:'30%',carbs:'45%',fat:'25%'}
+  },
+
+  cut:{ label:'Body Cutting', icon:'✂️', color:'#FF69B4', diet_type:'Advanced Shred Protocol',
+    desc:'Strip fat. Reveal muscle. Carb cycling, fasted cardio, and precision nutrition for definition.',
+    veg:{
+      meals:[
+        {time:'6:00 AM',name:'Fasted Start',detail:'Black coffee + 1 glass warm water + 5 min mobility',macros:'Carbs: 0g | Pro: 0g | Fat: 0g',cal:'5'},
+        {time:'8:00 AM',name:'Post-Cardio Breakfast',detail:'Tofu scramble (150g) + 1 multigrain toast + green tea (no sugar)',macros:'Carbs: 18g | Pro: 22g | Fat: 8g',cal:'280'},
+        {time:'11:00 AM',name:'Snack',detail:'Cucumber + celery + carrots + 2 tbsp hummus',macros:'Carbs: 12g | Pro: 4g | Fat: 4g',cal:'100'},
+        {time:'1:30 PM',name:'Lunch (High Carb Day)',detail:'Brown rice (¾ cup) + grilled paneer (100g) + large salad + lemon-vinegar dressing',macros:'Carbs: 58g | Pro: 28g | Fat: 10g',cal:'480'},
+        {time:'4:00 PM',name:'Pre-Workout',detail:'1 banana + BCAA drink (0 cal)',macros:'Carbs: 22g | Pro: 0g | Fat: 0g',cal:'90'},
+        {time:'7:30 PM',name:'Post-Workout Dinner',detail:'Paneer (150g) + massive stir-fried vegetables + 1 small roti',macros:'Carbs: 28g | Pro: 32g | Fat: 12g',cal:'420'},
+        {time:'9:30 PM',name:'Night',detail:'Cottage cheese (100g) + cucumber slices',macros:'Carbs: 5g | Pro: 18g | Fat: 3g',cal:'130'},
+      ],total:'1,505 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'6:00 AM',name:'Fasted Start',detail:'Black coffee + water',macros:'Carbs: 0g | Pro: 0g | Fat: 0g',cal:'5'},
+        {time:'8:00 AM',name:'Post-Cardio Breakfast',detail:'4 egg whites + 1 whole egg + 1 rice cake + black coffee',macros:'Carbs: 10g | Pro: 24g | Fat: 6g',cal:'200'},
+        {time:'11:00 AM',name:'Snack',detail:'Boiled chicken (80g) + cucumber + mustard',macros:'Carbs: 2g | Pro: 22g | Fat: 2g',cal:'140'},
+        {time:'1:30 PM',name:'Lunch',detail:'Grilled chicken breast (150g) + ½ cup rice + large green salad',macros:'Carbs: 38g | Pro: 42g | Fat: 5g',cal:'460'},
+        {time:'4:00 PM',name:'Pre-Workout',detail:'1 banana + BCAA / pre-workout',macros:'Carbs: 22g | Pro: 5g | Fat: 0g',cal:'90'},
+        {time:'7:30 PM',name:'Post-Workout Dinner',detail:'White fish (200g) + roasted vegetables (no oil, use spray) + small salad',macros:'Carbs: 18g | Pro: 44g | Fat: 4g',cal:'360'},
+        {time:'9:30 PM',name:'Night',detail:'Cottage cheese (100g) + water',macros:'Carbs: 4g | Pro: 14g | Fat: 1g',cal:'100'},
+      ],total:'1,355 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Fasted Cardio + Push',type:'Push',exercises:[
+        {name:'Incline Treadmill Walk (FASTED)',muscle:'Cardio / Fat Burn',sets:'1',reps:'40 min, 6% incline',rest:'—'},
+        {name:'Flat Dumbbell Press',muscle:'Chest',sets:'4',reps:'15',rest:'45s'},
+        {name:'Cable Flyes',muscle:'Chest',sets:'4',reps:'15',rest:'45s'},
+        {name:'Dumbbell Shoulder Press',muscle:'Shoulders',sets:'4',reps:'15',rest:'45s'},
+        {name:'Lateral Raises',muscle:'Side Delts',sets:'4',reps:'15',rest:'30s'},
+        {name:'Tricep Rope Pushdown',muscle:'Triceps',sets:'4',reps:'15',rest:'30s'},
+      ],tips:['Do fasted cardio on empty stomach for max fat burn','Higher reps, lower rest = more calories burned','No cheat meals for 4 weeks']},
+      {day:'Tuesday',focus:'Pull + HIIT',type:'Pull',exercises:[
+        {name:'Lat Pulldown',muscle:'Lats',sets:'4',reps:'15',rest:'45s'},
+        {name:'Cable Row',muscle:'Mid Back',sets:'4',reps:'15',rest:'45s'},
+        {name:'Face Pulls',muscle:'Rear Delts',sets:'3',reps:'20',rest:'30s'},
+        {name:'EZ Bar Curls',muscle:'Biceps',sets:'4',reps:'15',rest:'30s'},
+        {name:'HIIT Sprints (after weights)',muscle:'Full Body',sets:'10',reps:'20s sprint/40s walk',rest:'—'},
+      ],tips:['HIIT after weights = maximum fat burn','High reps maintain muscle during cut','Keep sodium low today']},
+      {day:'Wednesday',focus:'Legs + Abs',type:'Legs',exercises:[
+        {name:'Leg Press (high volume)',muscle:'Quads / Glutes',sets:'5',reps:'20',rest:'45s'},
+        {name:'Leg Curl',muscle:'Hamstrings',sets:'4',reps:'15',rest:'45s'},
+        {name:'Walking Lunges',muscle:'Legs',sets:'4',reps:'15/leg',rest:'45s'},
+        {name:'Calf Raises',muscle:'Calves',sets:'5',reps:'25',rest:'30s'},
+        {name:'Cable Crunches',muscle:'Abs',sets:'5',reps:'20',rest:'30s'},
+        {name:'Hanging Leg Raises',muscle:'Lower Abs',sets:'4',reps:'15',rest:'30s'},
+      ],tips:['High volume legs burn maximum calories','Abs are made in the kitchen AND the gym','Drink 600ml water after this session']},
+      {day:'Thursday',focus:'Fasted Cardio + Push',type:'Push',exercises:[
+        {name:'Fasted Cardio (Elliptical)',muscle:'Cardio',sets:'1',reps:'40 min, steady',rest:'—'},
+        {name:'Incline Push-Ups → Regular',muscle:'Chest',sets:'4',reps:'20',rest:'30s'},
+        {name:'Arnold Press',muscle:'Shoulders',sets:'4',reps:'15',rest:'45s'},
+        {name:'Cable Lateral Raises',muscle:'Side Delts',sets:'4',reps:'20',rest:'30s'},
+        {name:'Dips',muscle:'Triceps/Chest',sets:'4',reps:'15',rest:'45s'},
+      ],tips:['Second fasted cardio of the week — keep fat burning','Supersets recommended today','Low sodium intake all day']},
+      {day:'Friday',focus:'Pull + HIIT',type:'Pull',exercises:[
+        {name:'Pull-Ups',muscle:'Lats',sets:'4',reps:'Max',rest:'60s'},
+        {name:'Single Arm Row',muscle:'Back',sets:'3',reps:'12/side',rest:'45s'},
+        {name:'Hammer Curls',muscle:'Biceps',sets:'3',reps:'15',rest:'30s'},
+        {name:'Reverse Flyes',muscle:'Rear Delts',sets:'3',reps:'20',rest:'30s'},
+        {name:'HIIT — Assault Bike',muscle:'Full Body',sets:'8',reps:'30s max/30s rest',rest:'—'},
+      ],tips:['Pull-ups are the best back exercise for cutting','Assault bike is brutally effective for fat burn','Refuel with high-protein meal post-workout']},
+      {day:'Saturday',focus:'Full Body Circuit',type:'Circuit',exercises:[
+        {name:'Full Body Circuit (5 rounds)',muscle:'Full Body',sets:'5',reps:'rounds',rest:'90s between rounds'},
+        {name:'→ Jump Squats',muscle:'Legs',sets:'—',reps:'15',rest:'—'},
+        {name:'→ Push-Ups',muscle:'Chest',sets:'—',reps:'12',rest:'—'},
+        {name:'→ Kettlebell Swings',muscle:'Posterior Chain',sets:'—',reps:'15',rest:'—'},
+        {name:'→ Plank',muscle:'Core',sets:'—',reps:'30s',rest:'—'},
+        {name:'→ Box Jumps',muscle:'Legs / Cardio',sets:'—',reps:'10',rest:'—'},
+      ],tips:['This is your hardest day of the week','Record your time to beat next week','Great calorie burn + muscle retention']},
+      {day:'Sunday',focus:'Active Rest',type:'Rest',exercises:[
+        {name:'Light Walk',muscle:'Active Recovery',sets:'1',reps:'30 min',rest:'—'},
+        {name:'Yoga / Stretching',muscle:'Flexibility',sets:'1',reps:'20 min',rest:'—'},
+        {name:'Cold Shower',muscle:'Recovery',sets:'1',reps:'2–3 min',rest:'—'},
+      ],tips:['Low-carb day today (rest day)','Cold exposure aids recovery and fat metabolism','Visualise your goal physique — mindset matters']},
+    ],
+    water:[
+      {time:'6:00 AM',amount:'500 ml (fasted)',pct:50},
+      {time:'During cardio',amount:'400 ml',pct:40},
+      {time:'Mid-morning',amount:'400 ml',pct:40},
+      {time:'Pre-lunch',amount:'300 ml',pct:30},
+      {time:'Afternoon',amount:'500 ml',pct:50},
+      {time:'Pre-workout',amount:'400 ml',pct:40},
+      {time:'Post-workout',amount:'600 ml',pct:60},
+      {time:'Before bed',amount:'200 ml',pct:20},
+    ],
+    tips:[
+      {icon:'🔄',title:'Carb Cycling',text:'<strong>High carbs on training days</strong>, low carbs on rest days. This preserves muscle while maximising fat burn.'},
+      {icon:'🌅',title:'Fasted Cardio',text:'Morning cardio on empty stomach forces your body to burn <strong>stored fat</strong> as primary fuel.'},
+      {icon:'🧂',title:'Watch Sodium',text:'High sodium = water retention. <strong>Avoid processed food</strong>. You may be leaner than you look due to water weight.'},
+      {icon:'📏',title:'Measure, Don\'t Just Weigh',text:'Track waist, chest, arms with a tape. The scale lies during cutting — <strong>measurements tell the truth.</strong>'},
+      {icon:'🚫',title:'Zero Cheat Meals (4 Weeks)',text:'First 4 weeks — zero cheat meals. After that, one controlled refeed meal per week on training day.'},
+    ],
+    macros:{protein:'45%',carbs:'30%',fat:'25%'}
+  },
+
+  endurance:{ label:'Endurance', icon:'🏃', color:'#7B61FF', diet_type:'Athlete Fuel Protocol',
+    desc:'Carb-forward nutrition for runners, cyclists, and athletes. Sustained energy, peak stamina.',
+    veg:{
+      meals:[
+        {time:'6:30 AM',name:'Pre-Training Fuel',detail:'2 slices whole wheat toast + 1 tbsp peanut butter + 1 banana + water',macros:'Carbs: 60g | Pro: 10g | Fat: 8g',cal:'380'},
+        {time:'9:30 AM',name:'Post-Training Recovery',detail:'Oat smoothie: milk + oats + banana + mixed berries + 1 tbsp honey',macros:'Carbs: 78g | Pro: 18g | Fat: 8g',cal:'480'},
+        {time:'12:30 PM',name:'Lunch',detail:'Quinoa (1 cup) + chickpea salad + mixed greens + olive oil-lemon dressing',macros:'Carbs: 72g | Pro: 20g | Fat: 12g',cal:'560'},
+        {time:'3:30 PM',name:'Afternoon Fuel',detail:'2 energy balls (oats + dates + nuts + coconut) or a good energy bar',macros:'Carbs: 40g | Pro: 6g | Fat: 10g',cal:'280'},
+        {time:'6:00 PM',name:'Pre-Evening Run',detail:'1 banana + 3 medjool dates + water',macros:'Carbs: 60g | Pro: 1g | Fat: 0g',cal:'180'},
+        {time:'8:30 PM',name:'Recovery Dinner',detail:'Brown rice pasta + tomato sauce + paneer (100g) + roasted veggies',macros:'Carbs: 90g | Pro: 28g | Fat: 12g',cal:'620'},
+        {time:'10:00 PM',name:'Night Recovery',detail:'Tart cherry juice (200ml) + cottage cheese (100g)',macros:'Carbs: 30g | Pro: 16g | Fat: 2g',cal:'200'},
+      ],total:'2,700 kcal',
+    },
+    nonveg:{
+      meals:[
+        {time:'6:30 AM',name:'Pre-Training Fuel',detail:'2 slices toast + 2 boiled eggs + 1 banana',macros:'Carbs: 52g | Pro: 18g | Fat: 10g',cal:'400'},
+        {time:'9:30 AM',name:'Post-Training Recovery',detail:'Chocolate milk (500ml) + 3 egg whites + 1 banana',macros:'Carbs: 70g | Pro: 28g | Fat: 8g',cal:'500'},
+        {time:'12:30 PM',name:'Lunch',detail:'Whole wheat pasta + grilled chicken (150g) + marinara + veggies',macros:'Carbs: 88g | Pro: 45g | Fat: 10g',cal:'680'},
+        {time:'3:30 PM',name:'Afternoon Fuel',detail:'Tuna on crackers + 1 fruit + Greek yogurt',macros:'Carbs: 38g | Pro: 28g | Fat: 8g',cal:'320'},
+        {time:'6:00 PM',name:'Pre-Run Snack',detail:'1 banana + 2 dates + BCAA drink',macros:'Carbs: 45g | Pro: 5g | Fat: 0g',cal:'160'},
+        {time:'8:30 PM',name:'Recovery Dinner',detail:'Salmon (180g) + sweet potato (150g) + steamed broccoli + salad',macros:'Carbs: 55g | Pro: 45g | Fat: 16g',cal:'580'},
+        {time:'10:00 PM',name:'Night Recovery',detail:'Chocolate milk or casein shake',macros:'Carbs: 28g | Pro: 24g | Fat: 4g',cal:'200'},
+      ],total:'2,840 kcal',
+    },
+    workoutDays:[
+      {day:'Monday',focus:'Long Run (Easy)',type:'Cardio',exercises:[
+        {name:'Long Slow Distance Run',muscle:'Cardiovascular / Legs',sets:'1',reps:'45–60 min at 65% HR max',rest:'—'},
+        {name:'Dynamic Warm-Up',muscle:'Full Body',sets:'1',reps:'10 min',rest:'—'},
+        {name:'Cool-Down Walk',muscle:'Recovery',sets:'1',reps:'10 min',rest:'—'},
+        {name:'Post-Run Stretch',muscle:'Calves / Hip Flexors',sets:'1',reps:'15 min',rest:'—'},
+      ],tips:['Keep pace conversational — you should be able to speak','Eat 1–2 hours before for optimal energy','Rehydrate with electrolytes immediately after']},
+      {day:'Tuesday',focus:'Strength — Lower Body',type:'Strength',exercises:[
+        {name:'Single Leg Squats',muscle:'Quads / Balance',sets:'3',reps:'12/leg',rest:'60s'},
+        {name:'Hip Bridges / Barbell Glute Bridge',muscle:'Glutes / Hamstrings',sets:'4',reps:'15',rest:'45s'},
+        {name:'Step-Ups with Dumbbells',muscle:'Quads / Glutes',sets:'3',reps:'12/leg',rest:'45s'},
+        {name:'Calf Raises (single leg)',muscle:'Calves',sets:'4',reps:'20/leg',rest:'30s'},
+        {name:'Core Plank Circuit',muscle:'Core Stability',sets:'3',reps:'3×45s variations',rest:'30s'},
+      ],tips:['Strong legs = faster runner','Calves are critical — don\'t skip them','Core stability prevents running injuries']},
+      {day:'Wednesday',focus:'Interval Training',type:'Speed',exercises:[
+        {name:'Warm-Up Jog',muscle:'Cardio',sets:'1',reps:'10 min easy',rest:'—'},
+        {name:'400m Intervals',muscle:'Cardiovascular',sets:'8',reps:'400m hard / 90s rest',rest:'90s'},
+        {name:'100m Strides',muscle:'Speed / Neuromuscular',sets:'4',reps:'100m stride',rest:'2 min'},
+        {name:'Cool-Down Jog',muscle:'Recovery',sets:'1',reps:'10 min easy',rest:'—'},
+      ],tips:['Intervals improve VO2 max by up to 15%','Push hard on work intervals — 85-90% effort','Carb-load the evening before interval sessions']},
+      {day:'Thursday',focus:'Cross-Training',type:'Cross',exercises:[
+        {name:'Swimming or Cycling',muscle:'Cardiovascular / Full Body',sets:'1',reps:'45–60 min',rest:'—'},
+        {name:'Upper Body Strength',muscle:'Arms / Back / Core',sets:'3',reps:'3×12 each',rest:'60s'},
+        {name:'Mobility Routine',muscle:'Full Body',sets:'1',reps:'20 min',rest:'—'},
+      ],tips:['Cross-training prevents overuse injuries','Swimming is excellent for recovery and cardio','Treat this as active recovery']},
+      {day:'Friday',focus:'Tempo Run',type:'Speed',exercises:[
+        {name:'Warm-Up Easy Jog',muscle:'Cardio',sets:'1',reps:'10 min',rest:'—'},
+        {name:'Tempo Run (Comfortably Hard)',muscle:'Aerobic Threshold',sets:'1',reps:'20–25 min at 80% HR',rest:'—'},
+        {name:'Cool-Down Jog',muscle:'Recovery',sets:'1',reps:'10 min',rest:'—'},
+        {name:'Hip Flexor + Calf Stretch',muscle:'Running-Specific',sets:'1',reps:'15 min',rest:'—'},
+      ],tips:['Tempo runs raise your lactate threshold','Run at a pace you can barely maintain for 20 min','Carb-load tonight for Saturday\'s long session']},
+      {day:'Saturday',focus:'Long Endurance',type:'Cardio',exercises:[
+        {name:'Long Run or Cycle',muscle:'Full Cardiovascular System',sets:'1',reps:'60–90 min',rest:'—'},
+        {name:'Fuel During Session',muscle:'—',sets:'—',reps:'Carb gel or banana every 30–40 min',rest:'—'},
+        {name:'Post-Session Recovery Meal',muscle:'—',sets:'—',reps:'Within 30 min',rest:'—'},
+      ],tips:['This is your peak weekly session','Nutrition DURING the session is critical over 60 min','Chocolate milk post-session is one of the best recovery drinks']},
+      {day:'Sunday',focus:'Rest & Stretch',type:'Rest',exercises:[
+        {name:'Full Body Yoga',muscle:'Flexibility / Recovery',sets:'1',reps:'30 min',rest:'—'},
+        {name:'Ice Bath or Contrast Shower',muscle:'Inflammation Reduction',sets:'1',reps:'10–15 min',rest:'—'},
+        {name:'Sleep 8–9 hours',muscle:'Central Nervous System',sets:'1',reps:'8–9 hours',rest:'—'},
+      ],tips:['Full recovery today is essential','Plan your nutrition for next week','Consistency over months beats intensity over weeks']},
+    ],
+    water:[
+      {time:'2 hrs pre-training',amount:'500 ml',pct:50},
+      {time:'During training',amount:'150–250ml every 20 min',pct:80},
+      {time:'Post-training',amount:'600 ml + electrolytes',pct:60},
+      {time:'Mid-morning',amount:'400 ml',pct:40},
+      {time:'Pre-lunch',amount:'300 ml',pct:30},
+      {time:'Afternoon',amount:'500 ml',pct:50},
+      {time:'Evening pre-run',amount:'400 ml',pct:40},
+      {time:'Before bed',amount:'300 ml',pct:30},
+    ],
+    tips:[
+      {icon:'🍝',title:'Carb-Load Pre-Long Run',text:'Eat a pasta or rice-rich dinner the night before your long session. <strong>Glycogen is your fuel.</strong>'},
+      {icon:'🧪',title:'Practice Race Nutrition',text:'Use the same gels/food during training that you\'ll use in events. <strong>Never try new foods on race day.</strong>'},
+      {icon:'🧂',title:'Electrolytes on Long Runs',text:'After 45 minutes, you need more than water. <strong>Add electrolytes (sodium, potassium)</strong> to prevent cramping.'},
+      {icon:'⏱️',title:'30-Minute Recovery Window',text:'<strong>Consume carbs + protein within 30 minutes</strong> of finishing. This is when glycogen replenishment is fastest.'},
+      {icon:'📈',title:'Build Volume Slowly',text:'Increase weekly mileage by no more than <strong>10% per week</strong> to avoid injury.'},
+    ],
+    macros:{protein:'25%',carbs:'55%',fat:'20%'}
+  }
+};
+
+// ============ OPEN PLAN ============
+let currentPlan='loss';
+let activeDay=0;
+
+function openPlan(key){
+  currentPlan=key;
+  activeDay=0;
+  const plan=PLANS[key];
+  const color=plan.color;
+  const diet=currentDiet;
+
+  // Header
+  document.getElementById('detailHeader').innerHTML=`
+    <button class="detail-back" onclick="goPage('plans')">← Back to Plans</button>
+    <div class="detail-info">
+      <div class="detail-badge" style="background:${color}20;color:${color};border:1px solid ${color}40">${plan.diet_type} — ${diet==='veg'?'🌱 Vegetarian':'🥩 Non-Veg'}</div>
+      <div class="detail-title" style="color:${color}">${plan.icon} ${plan.label}</div>
+      <div class="detail-desc">${plan.desc}</div>
+    </div>
+  `;
+
+  // Tabs
+  document.getElementById('detailTabs').innerHTML=`
+    <button class="d-tab on" id="dt1" onclick="switchDTab(this,'dietContent')">🍽 Diet Plan</button>
+    <button class="d-tab" id="dt2" onclick="switchDTab(this,'workoutContent')">🏋️ Workout</button>
+    <button class="d-tab" id="dt3" onclick="switchDTab(this,'hydroContent')">💧 Hydration & Tips</button>
+  `;
+
+  // Build content
+  const d=plan[diet];
+  const mealHTML=d.meals.map(m=>`
+    <div class="meal-item" style="border-left-color:${color}">
+      <div class="m-time" style="color:${color}">${m.time}</div>
+      <div class="m-body">
+        <div class="m-name">${m.name}</div>
+        <div class="m-detail">${m.detail}</div>
+        <div class="m-macro">${m.macros.split('|').map(x=>`<span>${x.trim()}</span>`).join('')}</div>
+      </div>
+      <div style="text-align:right"><div class="m-cal" style="color:${color}">${m.cal}</div><div class="m-cal-label">kcal</div></div>
+    </div>
+  `).join('');
+
+  // Workout days
+  const dayBtnsHTML=plan.workoutDays.map((d,i)=>`
+    <div class="day-btn ${i===0?'on':''}" onclick="selectDay(${i})" id="dayBtn${i}">
+      <div>
+        <div class="day-btn-name">${d.day}</div>
+        <div class="day-btn-focus">${d.focus}</div>
+      </div>
+      <span class="day-btn-badge" style="background:${color}15;color:${color}">${d.type}</span>
+    </div>
+  `).join('');
+
+  // Water
+  const waterHTML=plan.water.map(w=>`
+    <div class="water-item">
+      <span class="wi-time">${w.time}</span>
+      <div class="wi-bar"><div class="wi-bar-fill" style="width:${w.pct}%"></div></div>
+      <span class="wi-amount">${w.amount}</span>
+    </div>
+  `).join('');
+
+  // Tips
+  const tipsHTML=plan.tips.map(t=>`
+    <div class="tip-item">
+      <div class="tip-icon">${t.icon}</div>
+      <div class="tip-text"><strong>${t.title}:</strong> ${t.text}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('detailContent').innerHTML=`
+    <div class="tab-content on" id="dietContent">
+      <div class="diet-week-header">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:8px">DAILY MEAL SCHEDULE</div>
+          <div style="font-size:0.82rem;color:var(--muted)">Follow this schedule 5–6 days/week. Rotate ingredients for variety.</div>
+        </div>
+        <div class="diet-note">⚡ Target: ${d.total}</div>
+      </div>
+      <div class="meals-timeline">${mealHTML}</div>
+      <div class="total-bar" style="border-color:${color}40">
+        <span class="total-bar-label">Daily Calorie Target</span>
+        <span class="total-bar-val" style="color:${color}">${d.total}</span>
+      </div>
+      <div class="macros-banner" style="border-color:${color}30;background:linear-gradient(135deg,${color}08,${color}04)">
+        <div class="macro-item"><div class="macro-val" style="color:${color}">${plan.macros.protein}</div><div class="macro-label">Protein Split</div></div>
+        <div class="macro-item"><div class="macro-val" style="color:var(--electric)">${plan.macros.carbs}</div><div class="macro-label">Carbs Split</div></div>
+        <div class="macro-item"><div class="macro-val" style="color:#a8ff78">${plan.macros.fat}</div><div class="macro-label">Fat Split</div></div>
+        <div style="flex:1;font-size:0.8rem;color:var(--muted);line-height:1.7;border-left:1px solid var(--border);padding-left:24px">
+          <strong style="color:var(--text)">Macro Split Strategy</strong><br>
+          Optimised for your ${plan.label.toLowerCase()} goal. Adjust portions up or down based on your body's response after 2 weeks.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="workoutContent">
+      <div style="margin-bottom:28px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:8px">WEEKLY WORKOUT PLAN</div>
+        <div style="font-size:0.82rem;color:var(--muted)">Click any day below to see the full exercise breakdown.</div>
+      </div>
+      <div class="workout-layout">
+        <div class="day-sidebar">${dayBtnsHTML}</div>
+        <div id="dayDetailPanel"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="hydroContent">
+      <div style="margin-bottom:28px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;margin-bottom:8px">HYDRATION & PRO TIPS</div>
+      </div>
+      <div class="hydration-layout">
+        <div class="h-card">
+          <div class="h-card-title">💧 <span style="color:var(--electric)">Water Schedule</span></div>
+          <div style="font-size:0.8rem;color:var(--muted);margin-bottom:20px">Target: 3–4L/day depending on activity.</div>
+          <div class="water-list">${waterHTML}</div>
+        </div>
+        <div class="h-card">
+          <div class="h-card-title">🔑 <span style="color:${color}">Pro Tips</span></div>
+          <div class="tips-grid2">${tipsHTML}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  goPage('detail');
+  renderDay(0);
+}
+
+function switchDTab(btn,contentId){
+  document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('on'));
+  document.getElementById(contentId).classList.add('on');
+}
+
+function selectDay(i){
+  activeDay=i;
+  document.querySelectorAll('.day-btn').forEach((b,j)=>b.classList.toggle('on',j===i));
+  renderDay(i);
+}
+
+function renderDay(i){
+  const plan=PLANS[currentPlan];
+  const color=plan.color;
+  const day=plan.workoutDays[i];
+  const exHTML=day.exercises.map((e,j)=>`
+    <div class="ex-card">
+      <div class="ex-num">${j+1}</div>
+      <div>
+        <div class="ex-name">${e.name}</div>
+        <div class="ex-muscle">${e.muscle}</div>
+      </div>
+      <div class="ex-pill sets">${e.sets} sets</div>
+      <div class="ex-pill reps">${e.reps}</div>
+      <div class="ex-pill rest">${e.rest} rest</div>
+    </div>
+  `).join('');
+  const tipsHTML=day.tips.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('dayDetailPanel').innerHTML=`
+    <div class="day-detail">
+      <div class="day-detail-header">
+        <div class="day-detail-day">${day.day} — ${day.type}</div>
+        <div class="day-detail-name" style="color:${color}">${day.focus}</div>
+        <div class="day-detail-sub">${day.exercises.length} exercises</div>
+      </div>
+      <div class="day-detail-body">
+        <div class="exercise-list">${exHTML}</div>
+        <div class="day-tips">
+          <div class="day-tips-title">COACH'S NOTES</div>
+          <ul>${tipsHTML}</ul>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('page-detail').classList.contains('active'))goPage('plans');});
+</script>
+</body>
+</html>
